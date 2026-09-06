@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Algora Admin</title>
+<style>
+  :root {
+    --bg: #0f1120; --surface: #171a2e; --surface-2: #1e2238; --border: #2e3352;
+    --text: #eef0fb; --text-muted: #9098c0; --primary: #6d5cf6; --primary-hover: #7d6dff;
+    --success: #34d399; --error: #f87171; --radius: 12px;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.5 -apple-system, Segoe UI, Roboto, sans-serif; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 32px 20px 80px; }
+  h1 { font-size: 20px; font-weight: 700; margin: 0 0 4px; }
+  .sub { color: var(--text-muted); margin: 0 0 28px; font-size: 13px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
+  .card h2 { font-size: 15px; margin: 0 0 14px; }
+  input, button { font: inherit; }
+  input[type=email], input[type=password], input[type=text] {
+    width: 100%; padding: 10px 12px; background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); margin-bottom: 10px;
+  }
+  input:focus { outline: none; border-color: var(--primary); }
+  button { background: var(--primary); color: #fff; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+  button:hover { background: var(--primary-hover); }
+  button.secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  button.danger { background: transparent; border: 1px solid var(--error); color: var(--error); padding: 6px 10px; font-size: 12px; }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--border); }
+  th { color: var(--text-muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; }
+  .muted { color: var(--text-muted); }
+  .row { display: flex; gap: 10px; align-items: center; }
+  .row > * { flex: 1; }
+  .row button { flex: none; }
+  #loginView { max-width: 380px; margin: 80px auto 0; }
+  #appView { display: none; }
+  .msg { padding: 10px 12px; border-radius: 8px; margin-bottom: 14px; font-size: 13px; display: none; }
+  .msg.error { background: rgba(248,113,113,.12); color: var(--error); display: block; }
+  .msg.success { background: rgba(52,211,153,.12); color: var(--success); display: block; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+  .topbar span { color: var(--text-muted); font-size: 13px; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+  .badge.owner { background: rgba(109,92,246,.18); color: #b3a6ff; }
+  .badge.admin { background: rgba(52,211,153,.15); color: var(--success); }
+  .badge.agent { background: rgba(144,152,192,.15); color: var(--text-muted); }
+  .empty { color: var(--text-muted); text-align: center; padding: 24px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div id="loginView">
+    <h1>Algora Admin</h1>
+    <p class="sub">Sign in to manage who's allowed to sign up.</p>
+    <div class="card">
+      <div id="loginMsg" class="msg"></div>
+      <input id="loginEmail" type="email" placeholder="Admin email" autocomplete="username" />
+      <input id="loginPassword" type="password" placeholder="Password" autocomplete="current-password" />
+      <button id="loginBtn" style="width:100%">Log In</button>
+    </div>
+  </div>
+
+  <div id="appView">
+    <div class="topbar">
+      <div>
+        <h1>Algora Admin</h1>
+        <p class="sub" style="margin:0">Invite-only access control for the Algora app</p>
+      </div>
+      <div class="row" style="flex:none">
+        <span id="whoami"></span>
+        <button class="secondary" id="logoutBtn">Log Out</button>
+      </div>
+    </div>
+
+    <div id="globalMsg" class="msg"></div>
+
+    <div class="card">
+      <h2>Approve a new email</h2>
+      <p class="sub" style="margin:0 0 12px">Creates the account immediately — they log in with just this email and a code sent to it, no password.</p>
+      <div class="row">
+        <input id="newEmail" type="email" placeholder="person@example.com" />
+        <input id="newFullName" type="text" placeholder="Full name" />
+      </div>
+      <div class="row">
+        <input id="newCompanyName" type="text" placeholder="Company / workspace name" />
+        <input id="newNote" type="text" placeholder="Note (optional)" />
+        <button id="addEmailBtn">Approve</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Approved emails <span class="muted" id="allowedCount"></span></h2>
+      <table>
+        <thead><tr><th>Email</th><th>Note</th><th>Added by</th><th>Added</th><th></th></tr></thead>
+        <tbody id="allowedRows"></tbody>
+      </table>
+      <div id="allowedEmpty" class="empty" style="display:none">No approved emails yet — add one above.</div>
+    </div>
+
+    <div class="card">
+      <h2>Registered users <span class="muted" id="usersCount"></span></h2>
+      <table>
+        <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Workspace</th><th>Joined</th></tr></thead>
+        <tbody id="userRows"></tbody>
+      </table>
+      <div id="usersEmpty" class="empty" style="display:none">Nobody has signed up yet.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const API = '/api/admin';
+  let token = localStorage.getItem('algora_admin_token') || '';
+
+  const $ = (id) => document.getElementById(id);
+  const showMsg = (el, text, kind) => { el.textContent = text; el.className = 'msg ' + kind; };
+  const clearMsg = (el) => { el.textContent = ''; el.className = 'msg'; };
+  const escapeHtml = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const fmtDate = (iso) => new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+
+  async function api(path, opts = {}) {
+    const res = await fetch(API + path, {
+      ...opts,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: 'Bearer ' + token } : {}),
+        ...(opts.headers || {}),
+      },
+    });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok || body.success === false) {
+      throw new Error(body.message || 'Request failed (' + res.status + ')');
+    }
+    return body.data;
+  }
+
+  function showApp() {
+    $('loginView').style.display = 'none';
+    $('appView').style.display = 'block';
+    loadAll();
+  }
+  function showLogin() {
+    $('appView').style.display = 'none';
+    $('loginView').style.display = 'block';
+  }
+
+  $('loginBtn').addEventListener('click', async () => {
+    clearMsg($('loginMsg'));
+    const email = $('loginEmail').value.trim();
+    const password = $('loginPassword').value;
+    if (!email || !password) return showMsg($('loginMsg'), 'Enter your email and password.', 'error');
+    $('loginBtn').disabled = true;
+    try {
+      const data = await api('/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+      token = data.token;
+      localStorage.setItem('algora_admin_token', token);
+      showApp();
+    } catch (err) {
+      showMsg($('loginMsg'), err.message, 'error');
+    } finally {
+      $('loginBtn').disabled = false;
+    }
+  });
+
+  $('logoutBtn').addEventListener('click', () => {
+    token = '';
+    localStorage.removeItem('algora_admin_token');
+    showLogin();
+  });
+
+  $('addEmailBtn').addEventListener('click', async () => {
+    clearMsg($('globalMsg'));
+    const email = $('newEmail').value.trim();
+    const fullName = $('newFullName').value.trim();
+    const companyName = $('newCompanyName').value.trim();
+    const note = $('newNote').value.trim();
+    if (!email) return showMsg($('globalMsg'), 'Enter an email to approve.', 'error');
+    if (!fullName || !companyName) return showMsg($('globalMsg'), 'Full name and company name are required (used to create their account).', 'error');
+    $('addEmailBtn').disabled = true;
+    try {
+      await api('/allowed-emails', {
+        method: 'POST',
+        body: JSON.stringify({ email, full_name: fullName, company_name: companyName, note: note || undefined }),
+      });
+      $('newEmail').value = '';
+      $('newFullName').value = '';
+      $('newCompanyName').value = '';
+      $('newNote').value = '';
+      showMsg($('globalMsg'), 'Approved ' + email + ' — account created, they can log in now.', 'success');
+      await loadAllowedEmails();
+    } catch (err) {
+      showMsg($('globalMsg'), err.message, 'error');
+    } finally {
+      $('addEmailBtn').disabled = false;
+    }
+  });
+
+  async function revokeEmail(id, email) {
+    if (!confirm('Revoke signup access for ' + email + '? (Does not remove an account that already signed up.)')) return;
+    try {
+      await api('/allowed-emails/' + id, { method: 'DELETE' });
+      await loadAllowedEmails();
+    } catch (err) {
+      showMsg($('globalMsg'), err.message, 'error');
+    }
+  }
+  window.revokeEmail = revokeEmail;
+
+  async function loadAllowedEmails() {
+    const rows = await api('/allowed-emails');
+    $('allowedCount').textContent = '(' + rows.length + ')';
+    $('allowedEmpty').style.display = rows.length ? 'none' : 'block';
+    $('allowedRows').innerHTML = rows.map((r) => `
+      <tr>
+        <td>${escapeHtml(r.email)}</td>
+        <td class="muted">${escapeHtml(r.note || '—')}</td>
+        <td class="muted">${escapeHtml(r.added_by)}</td>
+        <td class="muted">${fmtDate(r.created_at)}</td>
+        <td><button class="danger" onclick="revokeEmail('${r.id}','${escapeHtml(r.email)}')">Revoke</button></td>
+      </tr>
+    `).join('');
+  }
+
+  async function loadUsers() {
+    const rows = await api('/users');
+    $('usersCount').textContent = '(' + rows.length + ')';
+    $('usersEmpty').style.display = rows.length ? 'none' : 'block';
+    $('userRows').innerHTML = rows.map((u) => `
+      <tr>
+        <td>${escapeHtml(u.full_name)}</td>
+        <td class="muted">${escapeHtml(u.email)}</td>
+        <td><span class="badge ${u.role}">${escapeHtml(u.role)}</span></td>
+        <td class="muted">${escapeHtml(u.tenant_name)}</td>
+        <td class="muted">${fmtDate(u.created_at)}</td>
+      </tr>
+    `).join('');
+  }
+
+  async function loadAll() {
+    try {
+      const me = await api('/me');
+      $('whoami').textContent = me.full_name + ' (' + me.email + ')';
+      await Promise.all([loadAllowedEmails(), loadUsers()]);
+    } catch (err) {
+      // Token invalid/expired
+      token = '';
+      localStorage.removeItem('algora_admin_token');
+      showLogin();
+      showMsg($('loginMsg'), 'Session expired — please log in again.', 'error');
+    }
+  }
+
+  if (token) showApp(); else showLogin();
+</script>
+</body>
+</html>
