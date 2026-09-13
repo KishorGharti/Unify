@@ -3,7 +3,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_dimensions.dart';
 import '../theme/app_typography.dart';
 
-class AlgoraNavShell extends StatelessWidget {
+class UnifyNavShell extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onIndexChanged;
   final Widget body;
@@ -12,7 +12,7 @@ class AlgoraNavShell extends StatelessWidget {
   final String businessName;
   final VoidCallback? onTenantTap;
 
-  const AlgoraNavShell({
+  const UnifyNavShell({
     Key? key,
     required this.currentIndex,
     required this.onIndexChanged,

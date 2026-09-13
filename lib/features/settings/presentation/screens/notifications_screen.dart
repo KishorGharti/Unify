@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:algora/core/theme/app_colors.dart';
-import 'package:algora/core/theme/app_typography.dart';
-import 'package:algora/core/utils/date_formatter.dart';
-import 'package:algora/core/widgets/algora_card.dart';
+import 'package:unify/core/theme/app_colors.dart';
+import 'package:unify/core/theme/app_typography.dart';
+import 'package:unify/core/utils/date_formatter.dart';
+import 'package:unify/core/widgets/unify_card.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({Key? key}) : super(key: key);
@@ -76,7 +76,7 @@ class NotificationsScreen extends StatelessWidget {
               iconColor = AppColors.accent;
           }
 
-          return AlgoraCard(
+          return UnifyCard(
             padding: const EdgeInsets.all(14),
             borderColor: !isRead ? AppColors.primary.withOpacity(0.4) : null,
             child: Row(

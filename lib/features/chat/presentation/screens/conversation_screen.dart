@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:algora/core/constants/channel_config.dart';
-import 'package:algora/core/theme/app_colors.dart';
-import 'package:algora/core/theme/app_dimensions.dart';
-import 'package:algora/core/theme/app_typography.dart';
-import 'package:algora/core/widgets/channel_badge.dart';
-import 'package:algora/core/widgets/status_badge.dart';
-import 'package:algora/core/widgets/user_avatar.dart';
-import 'package:algora/core/widgets/loading_state_view.dart';
-import 'package:algora/features/auth/presentation/providers/auth_provider.dart';
-import 'package:algora/features/customer/presentation/screens/customer_profile_screen.dart';
-import 'package:algora/features/inbox/data/models/conversation_model.dart';
-import 'package:algora/features/inbox/presentation/providers/inbox_provider.dart';
-import 'package:algora/features/chat/data/models/message_model.dart';
-import 'package:algora/features/chat/presentation/providers/chat_provider.dart';
-import 'package:algora/features/chat/presentation/widgets/assignee_picker_modal.dart';
-import 'package:algora/features/chat/presentation/widgets/chat_bubble.dart';
-import 'package:algora/features/chat/presentation/widgets/chat_input_bar.dart';
-import 'package:algora/features/chat/presentation/widgets/quick_replies_modal.dart';
-import 'package:algora/features/chat/presentation/widgets/tag_manager_modal.dart';
+import 'package:unify/core/constants/channel_config.dart';
+import 'package:unify/core/theme/app_colors.dart';
+import 'package:unify/core/theme/app_dimensions.dart';
+import 'package:unify/core/theme/app_typography.dart';
+import 'package:unify/core/widgets/channel_badge.dart';
+import 'package:unify/core/widgets/status_badge.dart';
+import 'package:unify/core/widgets/user_avatar.dart';
+import 'package:unify/core/widgets/loading_state_view.dart';
+import 'package:unify/features/auth/presentation/providers/auth_provider.dart';
+import 'package:unify/features/customer/presentation/screens/customer_profile_screen.dart';
+import 'package:unify/features/inbox/data/models/conversation_model.dart';
+import 'package:unify/features/inbox/presentation/providers/inbox_provider.dart';
+import 'package:unify/features/chat/data/models/message_model.dart';
+import 'package:unify/features/chat/presentation/providers/chat_provider.dart';
+import 'package:unify/features/chat/presentation/widgets/assignee_picker_modal.dart';
+import 'package:unify/features/chat/presentation/widgets/chat_bubble.dart';
+import 'package:unify/features/chat/presentation/widgets/chat_input_bar.dart';
+import 'package:unify/features/chat/presentation/widgets/quick_replies_modal.dart';
+import 'package:unify/features/chat/presentation/widgets/tag_manager_modal.dart';
 
 class ConversationScreen extends ConsumerStatefulWidget {
   final ConversationModel initialConversation;
@@ -37,7 +37,7 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
   void initState() {
     super.initState();
     _conversation = widget.initialConversation;
-    // Mark conversation as read
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(inboxProvider.notifier).markAsRead(_conversation.id);
     });
@@ -211,7 +211,7 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
           ),
         ),
         actions: [
-          // Resolve / Reopen Action
+
           IconButton(
             icon: Icon(
               isResolved ? Icons.restart_alt_rounded : Icons.check_circle_outline_rounded,
@@ -220,7 +220,7 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
             tooltip: isResolved ? 'Reopen Conversation' : 'Resolve Conversation',
             onPressed: _toggleResolveStatus,
           ),
-          // More Menu (Assign, Tags, View Profile)
+
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert_rounded),
             onSelected: (value) {
@@ -273,7 +273,7 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
       ),
       body: Column(
         children: [
-          // Context Sub-header (Assignee, Status, Tags)
+
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
@@ -333,7 +333,6 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
             ),
           ),
 
-          // Chat Messages List
           Expanded(
             child: chatState.isLoading
                 ? const LoadingStateView(message: 'Loading conversation messages...')
@@ -367,7 +366,6 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
                   ),
           ),
 
-          // Message Input Bar
           ChatInputBar(
             channel: _conversation.channel,
             inputMode: chatState.inputMode,

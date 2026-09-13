@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:algora/core/theme/app_colors.dart';
-import 'package:algora/core/theme/app_dimensions.dart';
-import 'package:algora/core/theme/app_typography.dart';
-import 'package:algora/core/utils/date_formatter.dart';
-import 'package:algora/core/utils/validators.dart';
-import 'package:algora/core/widgets/algora_badge.dart';
-import 'package:algora/core/widgets/algora_button.dart';
-import 'package:algora/core/widgets/algora_card.dart';
-import 'package:algora/core/widgets/algora_text_field.dart';
-import 'package:algora/core/widgets/loading_state_view.dart';
-import 'package:algora/core/widgets/user_avatar.dart';
-import 'package:algora/features/auth/data/models/user_model.dart';
-import 'package:algora/features/team/data/models/team_member_model.dart';
-import 'package:algora/features/team/presentation/providers/team_provider.dart';
+import 'package:unify/core/theme/app_colors.dart';
+import 'package:unify/core/theme/app_dimensions.dart';
+import 'package:unify/core/theme/app_typography.dart';
+import 'package:unify/core/utils/date_formatter.dart';
+import 'package:unify/core/utils/validators.dart';
+import 'package:unify/core/widgets/unify_badge.dart';
+import 'package:unify/core/widgets/unify_button.dart';
+import 'package:unify/core/widgets/unify_card.dart';
+import 'package:unify/core/widgets/unify_text_field.dart';
+import 'package:unify/core/widgets/loading_state_view.dart';
+import 'package:unify/core/widgets/user_avatar.dart';
+import 'package:unify/features/auth/data/models/user_model.dart';
+import 'package:unify/features/team/data/models/team_member_model.dart';
+import 'package:unify/features/team/presentation/providers/team_provider.dart';
 
 class TeamMembersScreen extends ConsumerWidget {
   const TeamMembersScreen({Key? key}) : super(key: key);
@@ -46,20 +46,20 @@ class TeamMembersScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Add an agent or manager to your Algora workspace.',
+                    'Add an agent or manager to your Unify workspace.',
                     style: AppTypography.caption(
                       color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
                     ),
                   ),
                   const SizedBox(height: 16),
-                  AlgoraTextField(
+                  UnifyTextField(
                     label: 'Full Name',
                     hint: 'Alex Rivera',
                     controller: nameController,
                     validator: (v) => Validators.validateRequired(v, 'Full name'),
                   ),
                   const SizedBox(height: 12),
-                  AlgoraTextField(
+                  UnifyTextField(
                     label: 'Work Email',
                     hint: 'alex@acmegroup.com',
                     controller: emailController,
@@ -147,8 +147,8 @@ class TeamMembersScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Team Quota Card
-                  AlgoraCard(
+
+                  UnifyCard(
                     padding: const EdgeInsets.all(16),
                     child: Row(
                       children: [
@@ -186,7 +186,6 @@ class TeamMembersScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 24),
 
-                  // Members List
                   Text(
                     'Workspace Members (${teamState.members.length})',
                     style: AppTypography.heading3(
@@ -207,10 +206,10 @@ class TeamMembersScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 24),
 
-                  AlgoraButton(
+                  UnifyButton(
                     text: 'Invite New Team Member',
                     onPressed: () => _showInviteDialog(context, ref),
-                    variant: AlgoraButtonVariant.gradient,
+                    variant: UnifyButtonVariant.gradient,
                     icon: Icons.person_add_alt_1_rounded,
                     width: double.infinity,
                   ),
@@ -239,7 +238,7 @@ class TeamMembersScreen extends ConsumerWidget {
         break;
     }
 
-    return AlgoraCard(
+    return UnifyCard(
       padding: const EdgeInsets.all(14),
       child: Row(
         children: [
@@ -263,7 +262,7 @@ class TeamMembersScreen extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(width: 6),
-                    AlgoraBadge(
+                    UnifyBadge(
                       text: member.role.displayName,
                       backgroundColor: roleColor.withOpacity(0.12),
                       textColor: roleColor,

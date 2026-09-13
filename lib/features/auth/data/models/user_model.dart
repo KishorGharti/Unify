@@ -39,9 +39,7 @@ class UserModel {
   final BusinessTenantModel? currentTenant;
   final List<BusinessTenantModel> availableTenants;
   final DateTime createdAt;
-  // False until the user has set a real password (via reset or the
-  // create-password prompt) - the app uses this to decide whether to prompt
-  // for one right after a first OTP login.
+
   final bool hasPassword;
 
   const UserModel({

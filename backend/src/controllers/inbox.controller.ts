@@ -4,14 +4,9 @@ import { AuthedRequest } from '../middleware/auth';
 import { ok, fail } from '../utils/apiResponse';
 import { decryptToken } from '../utils/crypto';
 import { sendMetaMessage } from '../services/meta.service';
+import { sendInstagramLoginMessage } from '../services/instagramLogin.service';
 import { emitToTenant } from '../websocket/socket';
 
-// Real customer profile data (name, email, phone, avatar, tags, spend, etc.)
-// doesn't exist on Meta's side until you either ask the customer for it or
-// enrich it yourself, e.g. via GET /{psid}?fields=first_name,last_name,profile_pic
-// (Messenger only - Instagram does not expose PII this way). Shaped here as a
-// minimal stand-in so CustomerProfileModel.fromJson has everything it requires;
-// swap in a real `Customer` table + Graph enrichment when you build the CRM side.
 function toCustomerJson(conversation: { customerExternalId: string; customerName: string | null; customerAvatarUrl: string | null; createdAt: Date; lastMessageAt: Date | null }, channelType: string) {
   return {
     id: conversation.customerExternalId,
@@ -82,7 +77,7 @@ async function toConversationJson(conversation: {
     channel: conversation.channel.channelType,
     latest_message_text: latest?.text ?? '',
     latest_message_timestamp: (latest?.createdAt ?? conversation.createdAt).toISOString(),
-    unread_count: 0, // wire up a `readAt` column if you need real unread tracking
+    unread_count: 0,
     is_read: true,
     assigned_to_member_id: conversation.assignedAgentId,
     assigned_to_member_name: conversation.assignedAgent?.fullName ?? null,
@@ -98,7 +93,6 @@ const conversationInclude = {
   messages: { orderBy: { createdAt: 'asc' as const }, include: { senderAgent: true } },
 };
 
-// GET /inbox/conversations
 export async function getConversations(req: AuthedRequest, res: Response) {
   const conversations = await prisma.conversation.findMany({
     where: { tenantId: req.tenantId },
@@ -108,7 +102,6 @@ export async function getConversations(req: AuthedRequest, res: Response) {
   return ok(res, await Promise.all(conversations.map(toConversationJson)));
 }
 
-// GET /inbox/conversations/{id}
 export async function getConversationById(req: AuthedRequest, res: Response) {
   const conversation = await prisma.conversation.findFirst({
     where: { id: req.params.id, tenantId: req.tenantId },
@@ -118,7 +111,6 @@ export async function getConversationById(req: AuthedRequest, res: Response) {
   return ok(res, await toConversationJson(conversation));
 }
 
-// GET /inbox/conversations/{id}/messages
 export async function getMessages(req: AuthedRequest, res: Response) {
   const conversation = await prisma.conversation.findFirst({
     where: { id: req.params.id, tenantId: req.tenantId },
@@ -134,8 +126,6 @@ export async function getMessages(req: AuthedRequest, res: Response) {
   return ok(res, messages.map((m) => toMessageJson(m, conversation.channel.channelType)));
 }
 
-// POST /inbox/conversations/{id}/messages { text }
-// Sends an agent reply out through Messenger or Instagram Messaging.
 export async function sendMessage(req: AuthedRequest, res: Response) {
   const { text } = req.body ?? {};
   if (!text) return fail(res, 'text is required.', 422);
@@ -146,13 +136,22 @@ export async function sendMessage(req: AuthedRequest, res: Response) {
   });
   if (!conversation) return fail(res, 'Conversation not found.', 404);
 
-  const pageAccessToken = decryptToken(conversation.channel.accessTokenEncrypted);
-  const metaResult = await sendMetaMessage({
-    pageId: conversation.channel.externalId,
-    pageAccessToken,
-    recipientId: conversation.customerExternalId,
-    text,
-  });
+  const accessToken = decryptToken(conversation.channel.accessTokenEncrypted);
+
+  const metaResult =
+    conversation.channel.authMethod === 'instagram_login'
+      ? await sendInstagramLoginMessage({
+          igUserId: conversation.channel.externalId,
+          accessToken,
+          recipientId: conversation.customerExternalId,
+          text,
+        })
+      : await sendMetaMessage({
+          pageId: conversation.channel.externalId,
+          pageAccessToken: accessToken,
+          recipientId: conversation.customerExternalId,
+          text,
+        });
 
   const agent = await prisma.user.findUnique({ where: { id: req.userId } });
   const message = await prisma.message.create({
@@ -172,7 +171,6 @@ export async function sendMessage(req: AuthedRequest, res: Response) {
   return ok(res, messageJson, 201);
 }
 
-// POST /inbox/conversations/{id}/notes { text } - internal-only, never sent to Meta.
 export async function addInternalNote(req: AuthedRequest, res: Response) {
   const { text } = req.body ?? {};
   if (!text) return fail(res, 'text is required.', 422);
@@ -200,7 +198,6 @@ export async function addInternalNote(req: AuthedRequest, res: Response) {
   return ok(res, messageJson, 201);
 }
 
-// POST /inbox/conversations/{id}/assign { member_id, member_name }
 export async function assignConversation(req: AuthedRequest, res: Response) {
   const { member_id } = req.body ?? {};
   const conversation = await prisma.conversation.findFirst({ where: { id: req.params.id, tenantId: req.tenantId } });
@@ -211,7 +208,6 @@ export async function assignConversation(req: AuthedRequest, res: Response) {
   return ok(res, { assigned: true });
 }
 
-// POST /inbox/conversations/{id}/status { status }
 export async function updateStatus(req: AuthedRequest, res: Response) {
   const { status } = req.body ?? {};
   if (!['open', 'pending', 'resolved'].includes(status)) return fail(res, 'status must be open, pending, or resolved.', 422);
@@ -224,7 +220,6 @@ export async function updateStatus(req: AuthedRequest, res: Response) {
   return ok(res, { status });
 }
 
-// POST /inbox/conversations/{id}/tags { tags: string[] }
 export async function updateTags(req: AuthedRequest, res: Response) {
   const { tags } = req.body ?? {};
   if (!Array.isArray(tags)) return fail(res, 'tags must be an array of strings.', 422);

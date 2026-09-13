@@ -1,13 +1,5 @@
 import { MetaPage } from './meta.service';
-
-// Holds the Pages (with their access tokens + linked IG accounts) fetched right
-// after a tenant completes the Meta OAuth dialog, so the two-step
-// "pick a Page to connect" UI flow in connect_facebook_screen.dart /
-// connect_instagram_screen.dart has something to read from.
-//
-// This is process-memory only, which is fine for a single backend instance in
-// development. For a multi-instance production deployment, replace this with
-// a Redis hash (or a short-lived DB table) keyed by tenantId with a TTL.
+import { InstagramProfile } from './instagramLogin.service';
 
 interface PendingConnection {
   pages: MetaPage[];
@@ -15,7 +7,7 @@ interface PendingConnection {
 }
 
 const store = new Map<string, PendingConnection>();
-const TTL_MS = 10 * 60 * 1000; // 10 minutes
+const TTL_MS = 10 * 60 * 1000;
 
 export function setPendingPages(tenantId: string, pages: MetaPage[]): void {
   store.set(tenantId, { pages, fetchedAt: Date.now() });
@@ -33,4 +25,29 @@ export function getPendingPages(tenantId: string): MetaPage[] | null {
 
 export function clearPendingPages(tenantId: string): void {
   store.delete(tenantId);
+}
+
+interface PendingInstagramLogin {
+  account: InstagramProfile & { accessToken: string };
+  fetchedAt: number;
+}
+
+const instagramLoginStore = new Map<string, PendingInstagramLogin>();
+
+export function setPendingInstagramLogin(tenantId: string, account: InstagramProfile & { accessToken: string }): void {
+  instagramLoginStore.set(tenantId, { account, fetchedAt: Date.now() });
+}
+
+export function getPendingInstagramLogin(tenantId: string): (InstagramProfile & { accessToken: string }) | null {
+  const entry = instagramLoginStore.get(tenantId);
+  if (!entry) return null;
+  if (Date.now() - entry.fetchedAt > TTL_MS) {
+    instagramLoginStore.delete(tenantId);
+    return null;
+  }
+  return entry.account;
+}
+
+export function clearPendingInstagramLogin(tenantId: string): void {
+  instagramLoginStore.delete(tenantId);
 }

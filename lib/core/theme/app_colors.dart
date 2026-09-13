@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Brand Primary & Gradients - the same navy/sky-blue family as the auth
-  // screens (Login/Sign Up/Forgot Password/Onboarding/Splash), so the rest
-  // of the app reads as one product rather than two different color themes.
-  static const Color primary = Color(0xFF1D4ED8); // matches authHeading
+
+  static const Color primary = Color(0xFF1D4ED8);
   static const Color primaryLight = Color(0xFF2FA0DE);
   static const Color primaryDark = Color(0xFF0B2A4A);
   static const Color accent = Color(0xFF1878B0);
@@ -33,8 +31,6 @@ class AppColors {
     end: Alignment.bottomRight,
   );
 
-  // Auth screens (Login/Sign Up) - a distinct navy-to-sky-blue treatment,
-  // separate from the app's indigo/violet primary used everywhere else.
   static const Color authHeading = Color(0xFF1D4ED8);
   static const LinearGradient authBgGradient = LinearGradient(
     colors: [Color(0xFF071B2E), Color(0xFF1878B0)],
@@ -47,35 +43,28 @@ class AppColors {
     end: Alignment.centerRight,
   );
 
-  // Social Channels
   static const Color facebook = Color(0xFF1877F2);
   static const Color instagram = Color(0xFFE1306C);
   static const Color whatsapp = Color(0xFF25D366);
 
-  // Semantic Status Colors
-  static const Color statusOpen = Color(0xFF3B82F6);      // Blue
-  static const Color statusPending = Color(0xFFF59E0B);   // Amber
-  static const Color statusResolved = Color(0xFF10B981);  // Emerald
-  static const Color statusSnoozed = Color(0xFF8B5CF6);   // Purple
-  static const Color statusClosed = Color(0xFF6B7280);    // Gray
+  static const Color statusOpen = Color(0xFF3B82F6);
+  static const Color statusPending = Color(0xFFF59E0B);
+  static const Color statusResolved = Color(0xFF10B981);
+  static const Color statusSnoozed = Color(0xFF8B5CF6);
+  static const Color statusClosed = Color(0xFF6B7280);
 
-  // Dark Theme Backgrounds & Surfaces - the same navy family as
-  // authBgGradient/authButtonGradient (darkBg is that gradient's exact dark
-  // end), instead of a neutral near-black that reads as a different app.
   static const Color darkBg = Color(0xFF071B2E);
   static const Color darkSurface = Color(0xFF0C2740);
   static const Color darkCard = Color(0xFF123452);
   static const Color darkCardBorder = Color(0xFF1F4A6E);
   static const Color darkInputBg = Color(0xFF0C2740);
 
-  // Light Theme Backgrounds & Surfaces
   static const Color lightBg = Color(0xFFF8FAFC);
   static const Color lightSurface = Color(0xFFFFFFFF);
   static const Color lightCard = Color(0xFFFFFFFF);
   static const Color lightCardBorder = Color(0xFFE2E8F0);
   static const Color lightInputBg = Color(0xFFF1F5F9);
 
-  // Text Colors
   static const Color textPrimaryDark = Color(0xFFF8FAFC);
   static const Color textSecondaryDark = Color(0xFF94A3B8);
   static const Color textMutedDark = Color(0xFF64748B);
@@ -84,7 +73,6 @@ class AppColors {
   static const Color textSecondaryLight = Color(0xFF475569);
   static const Color textMutedLight = Color(0xFF94A3B8);
 
-  // Internal Note Color
   static const Color internalNoteBg = Color(0xFFFEF3C7);
   static const Color internalNoteText = Color(0xFF92400E);
   static const Color internalNoteBorder = Color(0xFFFDE68A);
@@ -93,7 +81,6 @@ class AppColors {
   static const Color internalNoteTextDark = Color(0xFFFCD34D);
   static const Color internalNoteBorderDark = Color(0xFF5C470E);
 
-  // System States
   static const Color success = Color(0xFF10B981);
   static const Color error = Color(0xFFEF4444);
   static const Color warning = Color(0xFFF59E0B);

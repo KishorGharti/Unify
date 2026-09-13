@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_dimensions.dart';
 import '../theme/app_typography.dart';
-import 'algora_button.dart';
+import 'unify_button.dart';
 
 class EmptyStateView extends StatelessWidget {
   final String title;
@@ -62,10 +62,10 @@ class EmptyStateView extends StatelessWidget {
             ),
             if (actionLabel != null && onAction != null) ...[
               const SizedBox(height: 24),
-              AlgoraButton(
+              UnifyButton(
                 text: actionLabel!,
                 onPressed: onAction!,
-                variant: AlgoraButtonVariant.primary,
+                variant: UnifyButtonVariant.primary,
                 height: 42,
               ),
             ],

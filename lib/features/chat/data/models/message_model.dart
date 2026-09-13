@@ -1,4 +1,4 @@
-import 'package:algora/core/constants/channel_config.dart';
+import 'package:unify/core/constants/channel_config.dart';
 
 enum MessageType {
   text,

@@ -3,7 +3,7 @@ class DashboardMetricsModel {
   final int openConversations;
   final int resolvedToday;
   final String avgResponseTime;
-  final double resolutionRate; // percentage 0-100
+  final double resolutionRate;
   final int facebookInquiries;
   final int instagramInquiries;
   final List<RecentActivityItem> recentActivities;

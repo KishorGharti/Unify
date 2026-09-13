@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:algora/core/theme/app_colors.dart';
-import 'package:algora/core/theme/app_typography.dart';
-import 'package:algora/core/utils/date_formatter.dart';
-import 'package:algora/core/widgets/empty_state_view.dart';
-import 'package:algora/core/widgets/loading_state_view.dart';
-import 'package:algora/core/widgets/user_avatar.dart';
-import 'package:algora/features/chat/presentation/screens/conversation_screen.dart';
-import 'package:algora/features/inbox/data/models/conversation_model.dart';
-import 'package:algora/features/inbox/presentation/providers/inbox_provider.dart';
+import 'package:unify/core/theme/app_colors.dart';
+import 'package:unify/core/theme/app_typography.dart';
+import 'package:unify/core/utils/date_formatter.dart';
+import 'package:unify/core/widgets/empty_state_view.dart';
+import 'package:unify/core/widgets/loading_state_view.dart';
+import 'package:unify/core/widgets/user_avatar.dart';
+import 'package:unify/features/chat/presentation/screens/conversation_screen.dart';
+import 'package:unify/features/inbox/data/models/conversation_model.dart';
+import 'package:unify/features/inbox/presentation/providers/inbox_provider.dart';
 
 class UnifiedInboxScreen extends ConsumerStatefulWidget {
   const UnifiedInboxScreen({Key? key}) : super(key: key);
@@ -74,7 +74,7 @@ class _UnifiedInboxScreenState extends ConsumerState<UnifiedInboxScreen> {
                 children: [
                   Expanded(
                     child: Text(
-                      'ALGORA',
+                      'UNIFY',
                       style: AppTypography.wordmark(color: isDark ? AppColors.textPrimaryDark : AppColors.authHeading, fontSize: 26),
                     ),
                   ),
@@ -172,10 +172,6 @@ class _UnifiedInboxScreenState extends ConsumerState<UnifiedInboxScreen> {
   Widget _buildConversationItem(BuildContext context, ConversationModel conv, bool isDark) {
     final hasUnread = !conv.isRead || conv.unreadCount > 0;
 
-    // No inline "add nickname" prompt cluttering the row - swipe a contact
-    // left to reveal the option instead. An already-set nickname still
-    // shows as a plain pill (that's just displaying data, not an
-    // affordance), and the same swipe action also edits/removes it.
     return Slidable(
       key: ValueKey(conv.id),
       endActionPane: ActionPane(

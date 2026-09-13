@@ -1,7 +1,7 @@
-# Algora Backend
+# Unify Backend
 
 Node.js + TypeScript + Express + Prisma (MongoDB) + Socket.IO backend for
-the Algora Flutter app. Implements real Meta (Facebook Messenger + Instagram
+the Unify Flutter app. Implements real Meta (Facebook Messenger + Instagram
 Messaging) OAuth, webhook receiving, and message sending — the pieces that
 can't safely live in the mobile app — plus a separate, invite-only access
 control system with its own admin panel (see section 7).
@@ -108,12 +108,12 @@ already match this API 1:1, so only the method bodies change:
 - [`auth_repository.dart`](../lib/features/auth/data/auth_repository.dart) → `POST /auth/login`, `/signup`, `GET /auth/me`
 
 **Not done yet, and worth flagging**: [`socket_service.dart`](../lib/core/websocket/socket_service.dart)'s
-`AlgoraWebSocketService` is currently a no-op stub — `connect()` just flips a
+`UnifyWebSocketService` is currently a no-op stub — `connect()` just flips a
 boolean and `emit()` does nothing, so it's not actually wired to this
 server's Socket.IO endpoint. To get live message push working you'll need to
 add the `socket_io_client` Flutter package and implement `connect()` to open
 a real connection with `auth: { token: <JWT> }`, listening for the
-`algora_event` event this backend emits (payload shape matches
+`unify_event` event this backend emits (payload shape matches
 `SocketEvent.fromJson` in [`socket_events.dart`](../lib/core/websocket/socket_events.dart)).
 Say the word and I'll wire that up too.
 

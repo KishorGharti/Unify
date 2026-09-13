@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/constants/app_constants.dart';
 import 'core/storage/secure_storage.dart';
 import 'core/theme/app_theme.dart';
-import 'core/widgets/algora_nav_shell.dart';
+import 'core/widgets/unify_nav_shell.dart';
 import 'features/auth/presentation/providers/auth_provider.dart';
 import 'features/auth/presentation/screens/splash_screen.dart';
 import 'features/channels/presentation/screens/connected_accounts_screen.dart';
@@ -29,13 +29,13 @@ void main() async {
 
   runApp(
     const ProviderScope(
-      child: AlgoraApp(),
+      child: UnifyApp(),
     ),
   );
 }
 
-class AlgoraApp extends ConsumerWidget {
-  const AlgoraApp({Key? key}) : super(key: key);
+class UnifyApp extends ConsumerWidget {
+  const UnifyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -82,7 +82,7 @@ class _MainNavigationShellState extends ConsumerState<MainNavigationShell> {
       const SettingsScreen(),
     ];
 
-    return AlgoraNavShell(
+    return UnifyNavShell(
       currentIndex: _currentIndex,
       onIndexChanged: _onTabChanged,
       unreadInboxCount: inboxState.totalUnreadCount,

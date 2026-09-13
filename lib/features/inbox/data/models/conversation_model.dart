@@ -1,7 +1,7 @@
-import 'package:algora/core/constants/channel_config.dart';
-import 'package:algora/core/widgets/status_badge.dart';
-import 'package:algora/features/customer/data/models/customer_profile_model.dart';
-import 'package:algora/features/chat/data/models/message_model.dart';
+import 'package:unify/core/constants/channel_config.dart';
+import 'package:unify/core/widgets/status_badge.dart';
+import 'package:unify/features/customer/data/models/customer_profile_model.dart';
+import 'package:unify/features/chat/data/models/message_model.dart';
 
 class ConversationModel {
   final String id;
@@ -17,8 +17,7 @@ class ConversationModel {
   final ConversationStatus status;
   final List<String> tags;
   final List<MessageModel> recentMessages;
-  // A custom label the app lets an agent give this contact (shown as a
-  // small green pill above their name) - purely optional, null by default.
+
   final String? nickname;
 
   const ConversationModel({

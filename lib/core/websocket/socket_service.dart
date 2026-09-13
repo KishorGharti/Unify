@@ -11,7 +11,7 @@ abstract class WebSocketService {
   void emit(String event, Map<String, dynamic> data);
 }
 
-class AlgoraWebSocketService implements WebSocketService {
+class UnifyWebSocketService implements WebSocketService {
   final _eventController = StreamController<SocketEvent>.broadcast();
   bool _isConnected = false;
   String? _tenantId;
@@ -47,7 +47,7 @@ class AlgoraWebSocketService implements WebSocketService {
 
   @override
   void emit(String event, Map<String, dynamic> data) {
-    // In production, sends frame over ws channel
+
   }
 
   void dispatchLocalEvent(SocketEvent event) {

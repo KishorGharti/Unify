@@ -26,9 +26,7 @@ class BusinessTenantModel {
     return BusinessTenantModel(
       id: json['id'] as String,
       name: name,
-      // The real backend only ever sends {id, name} for a tenant - slug is a
-      // client-side-only convenience, so derive it when missing instead of
-      // requiring the field.
+
       slug: (json['slug'] as String?) ?? name.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '-'),
       logoUrl: json['logo_url'] as String?,
       planId: json['plan_id'] as String? ?? 'plan_starter',

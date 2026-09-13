@@ -1,16 +1,10 @@
 import 'package:dio/dio.dart';
-import 'package:algora/core/constants/api_endpoints.dart';
-import 'package:algora/core/errors/app_exceptions.dart';
-import 'package:algora/core/network/api_client.dart';
-import 'package:algora/core/storage/secure_storage.dart';
+import 'package:unify/core/constants/api_endpoints.dart';
+import 'package:unify/core/errors/app_exceptions.dart';
+import 'package:unify/core/network/api_client.dart';
+import 'package:unify/core/storage/secure_storage.dart';
 import 'models/user_model.dart';
 
-/// Accounts are created by an admin (see the /admin panel's "Approve a new
-/// email") - there is no signup in the app. Login is password-only. OTP
-/// exists solely to set/reset that password (requestPasswordReset then
-/// resetPassword) - an admin's approval only ever generates a random
-/// password nobody knows, so this also covers a brand new account's
-/// first-ever password, not just a forgotten one.
 abstract class AuthRepository {
   Future<UserModel> login(String email, String password);
   Future<void> requestPasswordReset(String email);
@@ -20,13 +14,13 @@ abstract class AuthRepository {
   Future<void> switchTenant(String tenantId);
 }
 
-class AlgoraAuthRepository implements AuthRepository {
+class UnifyAuthRepository implements AuthRepository {
   final ApiClient apiClient;
   final SecureStorageService storage;
 
   UserModel? _currentUser;
 
-  AlgoraAuthRepository({required this.apiClient, required this.storage});
+  UnifyAuthRepository({required this.apiClient, required this.storage});
 
   @override
   Future<UserModel> login(String email, String password) async {
@@ -69,8 +63,6 @@ class AlgoraAuthRepository implements AuthRepository {
     }
   }
 
-  /// Shared by login/resetPassword - both return the same {token, user}
-  /// shape and log the device in the same way.
   Future<UserModel> _handleAuthResponse(Map<String, dynamic> data) async {
     final token = data['token'] as String;
     final user = UserModel.fromJson(data['user'] as Map<String, dynamic>);
@@ -86,8 +78,7 @@ class AlgoraAuthRepository implements AuthRepository {
     try {
       await apiClient.post<dynamic>(ApiEndpoints.logout, fromJsonT: (json) => json);
     } catch (_) {
-      // Stateless JWT - even if this call fails (offline, expired token,
-      // etc), clearing local state below still logs the device out.
+
     }
     await storage.clearAll();
     _currentUser = null;
@@ -107,7 +98,7 @@ class AlgoraAuthRepository implements AuthRepository {
       _currentUser = UserModel.fromJson(response.data!);
       return _currentUser;
     } catch (_) {
-      // Token invalid/expired - treat as logged out.
+
       await storage.clearAll();
       return null;
     }
@@ -115,9 +106,7 @@ class AlgoraAuthRepository implements AuthRepository {
 
   @override
   Future<void> switchTenant(String tenantId) async {
-    // Multi-tenant switching isn't implemented on the backend yet (single
-    // tenant per user for now) - this just keeps the locally-selected id in
-    // sync for whichever tenant is already on the cached user.
+
     await storage.saveTenantId(tenantId);
     if (_currentUser != null) {
       final newTenant = _currentUser!.availableTenants.firstWhere(

@@ -8,7 +8,7 @@ import { ok, fail } from '../utils/apiResponse';
 import { AuthedRequest } from '../middleware/auth';
 import { env } from '../config/env';
 
-const OTP_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const OTP_TTL_MS = 5 * 60 * 1000;
 const OTP_TTL_MINUTES = OTP_TTL_MS / 60000;
 const OTP_MAX_ATTEMPTS = 5;
 
@@ -30,10 +30,9 @@ function toUserJson(user: TenantUser, tenant?: { id: string; name: string } | nu
 }
 
 function generateOtpCode(): string {
-  return crypto.randomInt(100000, 1000000).toString(); // 6 digits
+  return crypto.randomInt(100000, 1000000).toString();
 }
 
-// Only emails already on the AllowedEmail list (i.e. not revoked) get a code.
 async function assertEmailIsApproved(email: string): Promise<{ ok: true } | { ok: false; message: string; status: number }> {
   const allowed = await prisma.allowedEmail.findUnique({ where: { email } });
   if (!allowed) {
@@ -42,11 +41,6 @@ async function assertEmailIsApproved(email: string): Promise<{ ok: true } | { ok
   return { ok: true };
 }
 
-// Login is password-only. OTP exists for exactly one purpose: proving you
-// own an admin-approved email so you can set/reset your password - both for
-// a brand new account (whose password is a random value nobody knows) and
-// for a genuinely forgotten one. There's no separate "log in with a code"
-// path.
 async function issuePasswordResetOtp(userId: string, email: string): Promise<void> {
   const code = generateOtpCode();
   const otpCodeHash = await bcrypt.hash(code, 10);
@@ -56,15 +50,11 @@ async function issuePasswordResetOtp(userId: string, email: string): Promise<voi
   });
   await sendPasswordResetEmail(email, code, OTP_TTL_MINUTES);
 
-  // Dev convenience only - lets you test the flow without checking a real
-  // inbox every time. Never logs in production.
   if (env.nodeEnv !== 'production') {
     console.log(`[OTP] password code for ${email}: ${code} (expires in ${OTP_TTL_MINUTES} min)`);
   }
 }
 
-// Verifies `code` against the stored, hashed, time-limited OTP for `userId`
-// and clears it on success.
 async function consumeOtp(userId: string, code: string): Promise<{ ok: true } | { ok: false; message: string; status: number }> {
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user || !user.otpCodeHash || !user.otpExpiresAt) {
@@ -87,11 +77,6 @@ async function consumeOtp(userId: string, code: string): Promise<{ ok: true } | 
   return { ok: true };
 }
 
-// POST /auth/login { email, password }
-// Deliberately gives the exact same "Invalid email or password." message
-// (and 401) whether the email was never approved, was revoked, doesn't have
-// an account, or the password is just wrong - never reveals which case it
-// was, so this can't be used to enumerate approved/registered emails.
 export async function login(req: Request, res: Response) {
   const { password } = req.body ?? {};
   const email = (req.body?.email as string | undefined)?.trim().toLowerCase();
@@ -111,10 +96,6 @@ export async function login(req: Request, res: Response) {
   return ok(res, { token, user: toUserJson(user, user.tenant) });
 }
 
-// POST /auth/password/forgot { email }
-// Step 1 of setting/resetting a password - covers both a brand new account's
-// first-ever password and a genuinely forgotten one; the app doesn't
-// distinguish the two.
 export async function requestPasswordReset(req: Request, res: Response) {
   const email = (req.body?.email as string | undefined)?.trim().toLowerCase();
   if (!email) return fail(res, 'email is required.', 422);
@@ -131,8 +112,6 @@ export async function requestPasswordReset(req: Request, res: Response) {
   return ok(res, { message: 'Code sent.', expires_in_seconds: OTP_TTL_MS / 1000 });
 }
 
-// POST /auth/password/reset { email, code, new_password }
-// Step 2 - sets the password and logs the user in.
 export async function resetPassword(req: Request, res: Response) {
   const { code } = req.body ?? {};
   const newPassword = req.body?.new_password as string | undefined;
@@ -153,15 +132,12 @@ export async function resetPassword(req: Request, res: Response) {
   return ok(res, { token, user: toUserJson({ ...user, hasPassword: true }, user.tenant) });
 }
 
-// GET /auth/me
 export async function me(req: AuthedRequest, res: Response) {
   const user = await prisma.user.findUnique({ where: { id: req.userId }, include: { tenant: true } });
   if (!user) return fail(res, 'User not found.', 404);
   return ok(res, toUserJson(user, user.tenant));
 }
 
-// POST /auth/logout - stateless JWT, nothing to invalidate server-side without a
-// token blocklist; kept as a no-op endpoint so the Flutter client's call succeeds.
 export async function logout(_req: Request, res: Response) {
   return ok(res, { loggedOut: true });
 }

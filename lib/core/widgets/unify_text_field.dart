@@ -3,7 +3,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_dimensions.dart';
 import '../theme/app_typography.dart';
 
-class AlgoraTextField extends StatefulWidget {
+class UnifyTextField extends StatefulWidget {
   final String? label;
   final String? hint;
   final TextEditingController? controller;
@@ -19,7 +19,7 @@ class AlgoraTextField extends StatefulWidget {
   final bool readOnly;
   final VoidCallback? onTap;
 
-  const AlgoraTextField({
+  const UnifyTextField({
     Key? key,
     this.label,
     this.hint,
@@ -38,10 +38,10 @@ class AlgoraTextField extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<AlgoraTextField> createState() => _AlgoraTextFieldState();
+  State<UnifyTextField> createState() => _UnifyTextFieldState();
 }
 
-class _AlgoraTextFieldState extends State<AlgoraTextField> {
+class _UnifyTextFieldState extends State<UnifyTextField> {
   bool _obscureText = true;
 
   @override

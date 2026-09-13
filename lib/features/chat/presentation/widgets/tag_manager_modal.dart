@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:algora/core/theme/app_colors.dart';
-import 'package:algora/core/theme/app_dimensions.dart';
-import 'package:algora/core/theme/app_typography.dart';
-import 'package:algora/core/widgets/algora_button.dart';
+import 'package:unify/core/theme/app_colors.dart';
+import 'package:unify/core/theme/app_dimensions.dart';
+import 'package:unify/core/theme/app_typography.dart';
+import 'package:unify/core/widgets/unify_button.dart';
 
 class TagManagerModal extends StatefulWidget {
   final List<String> currentTags;
@@ -100,7 +100,6 @@ class _TagManagerModalState extends State<TagManagerModal> {
             ),
             const SizedBox(height: 14),
 
-            // Tag chips
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -122,7 +121,6 @@ class _TagManagerModalState extends State<TagManagerModal> {
             ),
             const SizedBox(height: 16),
 
-            // Add custom tag row
             Row(
               children: [
                 Expanded(
@@ -151,14 +149,13 @@ class _TagManagerModalState extends State<TagManagerModal> {
             ),
             const SizedBox(height: 20),
 
-            // Save button
-            AlgoraButton(
+            UnifyButton(
               text: 'Save Tags',
               onPressed: () {
                 widget.onSaveTags(_selectedTags);
                 Navigator.of(context).pop();
               },
-              variant: AlgoraButtonVariant.gradient,
+              variant: UnifyButtonVariant.gradient,
               width: double.infinity,
             ),
           ],

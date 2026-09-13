@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:algora/core/constants/app_constants.dart';
-import 'package:algora/core/theme/app_colors.dart';
-import 'package:algora/core/theme/app_typography.dart';
-import 'package:algora/core/widgets/algora_gradient_pill_button.dart';
+import 'package:unify/core/constants/app_constants.dart';
+import 'package:unify/core/theme/app_colors.dart';
+import 'package:unify/core/theme/app_typography.dart';
+import 'package:unify/core/widgets/unify_gradient_pill_button.dart';
 import '../providers/auth_provider.dart';
 import 'login_screen.dart';
 
@@ -18,8 +18,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentIndex = 0;
 
-  // Icon accents stay within the same navy/blue family as the rest of the
-  // auth flow, rather than the app's indigo/violet palette used elsewhere.
   final List<Map<String, dynamic>> _slides = [
     {
       'title': 'One Unified Inbox for Facebook & Instagram',
@@ -65,13 +63,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              // Top Bar
+
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('ALGORA', style: AppTypography.wordmark(color: Colors.white, fontSize: 24)),
+                    Text('UNIFY', style: AppTypography.wordmark(color: Colors.white, fontSize: 24)),
                     TextButton(
                       onPressed: () async {
                         await _completeOnboarding();
@@ -86,7 +84,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 ),
               ),
 
-              // Page View
               Expanded(
                 child: PageView.builder(
                   controller: _pageController,
@@ -157,7 +154,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 ),
               ),
 
-              // Indicator Dots & Buttons
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.fromLTRB(24, 28, 24, 28),
@@ -185,8 +181,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     ),
                     const SizedBox(height: 24),
                     if (_currentIndex == _slides.length - 1) ...[
-                      // Invite-only: no self-serve signup. First-time visitors
-                      // are shown how to request access instead of a sign-up form.
+
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
@@ -196,7 +191,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         child: Column(
                           children: [
                             Text(
-                              'Algora is invite-only. Contact us to get access:',
+                              'Unify is invite-only. Contact us to get access:',
                               textAlign: TextAlign.center,
                               style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
                             ),
@@ -228,7 +223,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      AlgoraGradientPillButton(
+                      UnifyGradientPillButton(
                         text: 'I Have Access - Log In',
                         onPressed: () async {
                           await _completeOnboarding();
@@ -239,7 +234,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         },
                       ),
                     ] else ...[
-                      AlgoraGradientPillButton(
+                      UnifyGradientPillButton(
                         text: 'Continue',
                         onPressed: () {
                           _pageController.nextPage(

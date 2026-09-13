@@ -20,8 +20,6 @@ function toAllowedEmailJson(row: { id: string; email: string; note: string | nul
   };
 }
 
-// POST /admin/login - there is no public admin signup route by design;
-// admin accounts are created with `npm run create-admin` (see scripts/createAdmin.ts).
 export async function adminLogin(req: AdminAuthedRequest, res: Response) {
   const { password } = req.body ?? {};
   const email = (req.body?.email as string | undefined)?.trim().toLowerCase();
@@ -37,14 +35,12 @@ export async function adminLogin(req: AdminAuthedRequest, res: Response) {
   return ok(res, { token, admin: toAdminJson(admin) });
 }
 
-// GET /admin/me
 export async function adminMe(req: AdminAuthedRequest, res: Response) {
   const admin = await prisma.adminUser.findUnique({ where: { id: req.adminId } });
   if (!admin) return fail(res, 'Admin not found.', 404);
   return ok(res, toAdminJson(admin));
 }
 
-// GET /admin/allowed-emails - the invite list gating signup.
 export async function listAllowedEmails(_req: AdminAuthedRequest, res: Response) {
   const rows = await prisma.allowedEmail.findMany({
     include: { addedByAdmin: true },
@@ -53,13 +49,6 @@ export async function listAllowedEmails(_req: AdminAuthedRequest, res: Response)
   return ok(res, rows.map(toAllowedEmailJson));
 }
 
-// POST /admin/allowed-emails { email, full_name, company_name, note? } -
-// grants an email login access. Passwordless: this creates the person's
-// account (Tenant + User) immediately, so they can log straight in with
-// email + emailed OTP - there's no separate signup step in the app.
-// full_name/company_name are only required the first time an email is
-// approved; re-approving a previously revoked email just restores access to
-// its existing account.
 export async function addAllowedEmail(req: AdminAuthedRequest, res: Response) {
   const { note } = req.body ?? {};
   const email = (req.body?.email as string | undefined)?.trim().toLowerCase();
@@ -81,8 +70,7 @@ export async function addAllowedEmail(req: AdminAuthedRequest, res: Response) {
   });
 
   if (!existingUser) {
-    // Random password, hashed and stored for DB integrity - the account is
-    // passwordless in practice, nobody is ever shown or types this value.
+
     const randomPassword = crypto.randomBytes(24).toString('hex');
     const passwordHash = await bcrypt.hash(randomPassword, 12);
     const tenant = await prisma.tenant.create({ data: { name: companyName! } });
@@ -94,12 +82,6 @@ export async function addAllowedEmail(req: AdminAuthedRequest, res: Response) {
   return ok(res, toAllowedEmailJson(row), 201);
 }
 
-// DELETE /admin/allowed-emails/{id} - revokes access. The account itself is
-// untouched (so re-approving the same email later restores it as-is), but
-// both login and requestPasswordReset check this list, so a revoked email
-// can no longer log in or request a password code. Any JWT already issued
-// to them stays valid until it expires - add a token blocklist if you need
-// to also kill an active session.
 export async function removeAllowedEmail(req: AdminAuthedRequest, res: Response) {
   const { id } = req.params;
   const existing = await prisma.allowedEmail.findUnique({ where: { id } });
@@ -109,7 +91,6 @@ export async function removeAllowedEmail(req: AdminAuthedRequest, res: Response)
   return ok(res, { removed: true });
 }
 
-// GET /admin/users - read-only visibility into who has actually signed up.
 export async function listUsers(_req: AdminAuthedRequest, res: Response) {
   const users = await prisma.user.findMany({
     include: { tenant: true },

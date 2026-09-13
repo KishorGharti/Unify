@@ -1,11 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:algora/features/auth/presentation/providers/auth_provider.dart';
-import 'package:algora/features/channels/data/channel_repository.dart';
-import 'package:algora/features/channels/data/models/connected_account_model.dart';
+import 'package:unify/features/auth/presentation/providers/auth_provider.dart';
+import 'package:unify/features/channels/data/channel_repository.dart';
+import 'package:unify/features/channels/data/models/connected_account_model.dart';
 
 final channelRepositoryProvider = Provider<ChannelRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
-  return AlgoraChannelRepository(apiClient: apiClient);
+  return UnifyChannelRepository(apiClient: apiClient);
 });
 
 class ChannelsState {
@@ -61,7 +61,7 @@ class ChannelsNotifier extends StateNotifier<ChannelsState> {
       state = state.copyWith(
         isLoading: false,
         accounts: [...state.accounts.where((a) => a.id != account.id), account],
-        successMessage: 'Successfully connected $pageName to Algora!',
+        successMessage: 'Successfully connected $pageName to Unify!',
       );
       return true;
     } catch (e) {
@@ -74,6 +74,22 @@ class ChannelsNotifier extends StateNotifier<ChannelsState> {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final account = await _repository.connectInstagramAccount(igUserId: igUserId, pageId: pageId);
+      state = state.copyWith(
+        isLoading: false,
+        accounts: [...state.accounts.where((a) => a.id != account.id), account],
+        successMessage: 'Successfully connected $username Instagram account!',
+      );
+      return true;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      return false;
+    }
+  }
+
+  Future<bool> connectInstagramLoginAccount({required String igUserId, required String username}) async {
+    state = state.copyWith(isLoading: true, errorMessage: null);
+    try {
+      final account = await _repository.connectInstagramLoginAccount(igUserId: igUserId);
       state = state.copyWith(
         isLoading: false,
         accounts: [...state.accounts.where((a) => a.id != account.id), account],

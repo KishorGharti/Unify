@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
-import 'package:algora/core/constants/api_endpoints.dart';
-import 'package:algora/core/constants/channel_config.dart';
-import 'package:algora/core/errors/app_exceptions.dart';
-import 'package:algora/core/network/api_client.dart';
+import 'package:unify/core/constants/api_endpoints.dart';
+import 'package:unify/core/constants/channel_config.dart';
+import 'package:unify/core/errors/app_exceptions.dart';
+import 'package:unify/core/network/api_client.dart';
 import 'models/message_model.dart';
 
 abstract class ChatRepository {
@@ -26,13 +26,10 @@ abstract class ChatRepository {
   });
 }
 
-/// Talks to the real backend (see backend/src/controllers/inbox.controller.ts).
-/// A customer reply actually goes out through the Messenger/Instagram Send
-/// API - there's no local echo or fake delay.
-class AlgoraChatRepository implements ChatRepository {
+class UnifyChatRepository implements ChatRepository {
   final ApiClient apiClient;
 
-  AlgoraChatRepository({required this.apiClient});
+  UnifyChatRepository({required this.apiClient});
 
   @override
   Future<List<MessageModel>> getMessages(String conversationId) async {
@@ -91,9 +88,7 @@ class AlgoraChatRepository implements ChatRepository {
     required ChannelType channel,
     required String senderName,
   }) async {
-    // The backend has no attachment upload/send endpoint yet (sendMessage
-    // only accepts { text } - see inbox.controller.ts). Surfacing this
-    // honestly rather than faking a successful send.
+
     throw Exception('Sending image attachments isn\'t supported by the backend yet.');
   }
 

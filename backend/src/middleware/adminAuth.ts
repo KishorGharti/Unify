@@ -14,8 +14,6 @@ interface AdminJwtPayload {
   scope: string;
 }
 
-/** Reads `Authorization: Bearer <adminToken>` - verified against ADMIN_JWT_SECRET,
- *  entirely separate from the tenant requireAuth in middleware/auth.ts. */
 export function requireAdminAuth(req: AdminAuthedRequest, res: Response, next: NextFunction) {
   const header = req.headers.authorization;
   const token = header?.startsWith('Bearer ') ? header.slice('Bearer '.length) : null;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppDimensions {
-  // Spacing
+
   static const double spaceXs = 4.0;
   static const double spaceSm = 8.0;
   static const double spaceMd = 12.0;
@@ -10,7 +10,6 @@ class AppDimensions {
   static const double space2Xl = 32.0;
   static const double space3Xl = 48.0;
 
-  // Border Radii
   static const double radiusSm = 6.0;
   static const double radiusMd = 10.0;
   static const double radiusLg = 14.0;
@@ -25,7 +24,6 @@ class AppDimensions {
   static const BorderRadius rounded2Xl = BorderRadius.all(Radius.circular(radius2Xl));
   static const BorderRadius roundedFull = BorderRadius.all(Radius.circular(radiusFull));
 
-  // Heights & Sizes
   static const double buttonHeight = 48.0;
   static const double buttonHeightSm = 36.0;
   static const double inputHeight = 50.0;

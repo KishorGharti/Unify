@@ -5,8 +5,6 @@ import { env } from '../config/env';
 
 let io: SocketIOServer | null = null;
 
-// Event shape mirrors SocketEvent.fromJson in lib/core/websocket/socket_events.dart:
-// { event, tenant_id, conversation_id, payload, timestamp }
 export interface OutgoingSocketEvent {
   event:
     | 'message.new'
@@ -26,10 +24,6 @@ export function initSocketServer(httpServer: HttpServer): SocketIOServer {
     cors: { origin: env.corsOrigin, credentials: true },
   });
 
-  // Flutter's real client (once AlgoraWebSocketService is implemented with
-  // socket_io_client) should connect with `auth: { token }`, mirroring the
-  // Bearer JWT used for REST calls, then get placed in a room scoped to its
-  // tenant so it only ever receives its own workspace's events.
   io.use((socket, next) => {
     const token = socket.handshake.auth?.token as string | undefined;
     if (!token) return next(new Error('Missing auth token.'));
@@ -57,10 +51,9 @@ export function initSocketServer(httpServer: HttpServer): SocketIOServer {
   return io;
 }
 
-/** Pushes a real-time event to every connected client in a tenant's workspace. */
 export function emitToTenant(event: OutgoingSocketEvent): void {
   if (!io) return;
-  io.to(`tenant:${event.tenantId}`).emit('algora_event', {
+  io.to(`tenant:${event.tenantId}`).emit('unify_event', {
     event: event.event,
     tenant_id: event.tenantId,
     conversation_id: event.conversationId ?? null,

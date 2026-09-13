@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:algora/core/theme/app_colors.dart';
-import 'package:algora/core/theme/app_typography.dart';
-import 'package:algora/core/widgets/user_avatar.dart';
-import 'package:algora/features/inbox/data/models/conversation_model.dart';
-import 'package:algora/features/inbox/presentation/providers/inbox_provider.dart';
+import 'package:unify/core/theme/app_colors.dart';
+import 'package:unify/core/theme/app_typography.dart';
+import 'package:unify/core/widgets/user_avatar.dart';
+import 'package:unify/features/inbox/data/models/conversation_model.dart';
+import 'package:unify/features/inbox/presentation/providers/inbox_provider.dart';
 
 enum _CallDirection { outgoing, incomingAnswered, incomingMissed }
 
 enum _CallKind { voice, video }
 
 class _CallLogEntry {
-  final ConversationModel? conversation; // null for an unmatched raw number
+  final ConversationModel? conversation;
   final String? rawNumber;
   final _CallDirection direction;
   final _CallKind kind;
@@ -26,10 +26,6 @@ class _CallLogEntry {
   });
 }
 
-/// UI-only call history screen matching the reference design. There is no
-/// voice/video calling infrastructure behind this app (no Twilio/Agora/etc
-/// integration) - this is a static, sample-data screen so the design can be
-/// reviewed and built against, not a working dialer.
 class CallScreen extends ConsumerWidget {
   const CallScreen({Key? key}) : super(key: key);
 
@@ -157,8 +153,7 @@ class CallScreen extends ConsumerWidget {
       entries.add(_CallLogEntry(conversation: c[1], direction: _CallDirection.outgoing, kind: _CallKind.video, whenLabel: 'Today, 5:54 pm'));
     }
     entries.add(_CallLogEntry(conversation: c[0], direction: _CallDirection.incomingAnswered, kind: _CallKind.video, whenLabel: '4 minute ago'));
-    // A raw, unmatched number - shown when a call comes from someone not in
-    // the contact list yet.
+
     entries.add(const _CallLogEntry(rawNumber: '+977-9866989166', direction: _CallDirection.incomingMissed, kind: _CallKind.voice, whenLabel: 'Today, 5:54 pm'));
     entries.add(_CallLogEntry(conversation: c[0], direction: _CallDirection.incomingMissed, kind: _CallKind.voice, whenLabel: '4 minute ago'));
     if (c.length > 1) {

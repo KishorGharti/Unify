@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_dimensions.dart';
 
-class AlgoraCard extends StatelessWidget {
+class UnifyCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry padding;
   final VoidCallback? onTap;
@@ -12,7 +12,7 @@ class AlgoraCard extends StatelessWidget {
   final double? height;
   final bool hasGradient;
 
-  const AlgoraCard({
+  const UnifyCard({
     Key? key,
     required this.child,
     this.padding = const EdgeInsets.all(AppDimensions.spaceLg),
@@ -47,12 +47,6 @@ class AlgoraCard extends StatelessWidget {
       ],
     );
 
-    // Always give descendants a local Material to paint on - not just when
-    // the card itself is tappable. A card that isn't tappable but wraps
-    // tappable children (e.g. a Column of ListTiles) still needs one, or
-    // their ink splashes/backgrounds render on whatever Material ancestor
-    // happens to be further up the tree instead, hidden behind this card's
-    // own DecoratedBox.
     if (onTap != null) {
       return Container(
         width: width,

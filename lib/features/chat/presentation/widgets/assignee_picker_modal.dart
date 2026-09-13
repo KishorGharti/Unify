@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:algora/core/theme/app_colors.dart';
-import 'package:algora/core/theme/app_dimensions.dart';
-import 'package:algora/core/theme/app_typography.dart';
-import 'package:algora/core/widgets/algora_card.dart';
-import 'package:algora/core/widgets/user_avatar.dart';
+import 'package:unify/core/theme/app_colors.dart';
+import 'package:unify/core/theme/app_dimensions.dart';
+import 'package:unify/core/theme/app_typography.dart';
+import 'package:unify/core/widgets/unify_card.dart';
+import 'package:unify/core/widgets/user_avatar.dart';
 
 class AssigneePickerModal extends StatelessWidget {
   final String? currentAssigneeId;
@@ -63,8 +63,7 @@ class AssigneePickerModal extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Unassigned Option
-            AlgoraCard(
+            UnifyCard(
               onTap: () {
                 onSelectAssignee(null, 'Unassigned');
                 Navigator.of(context).pop();
@@ -98,12 +97,11 @@ class AssigneePickerModal extends StatelessWidget {
             ),
             const SizedBox(height: 10),
 
-            // Member list
             ...teamMembers.map((m) {
               final isSelected = currentAssigneeId == m['id'];
               return Padding(
                 padding: const EdgeInsets.only(bottom: 10),
-                child: AlgoraCard(
+                child: UnifyCard(
                   onTap: () {
                     onSelectAssignee(m['id'], m['name']);
                     Navigator.of(context).pop();

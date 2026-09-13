@@ -1,6 +1,6 @@
-# Algora - Unified Business Messaging Mobile SaaS
+# Unify - Unified Business Messaging Mobile SaaS
 
-Algora is a production-ready Flutter mobile SaaS application for unified customer messaging across **Facebook Pages** and **Instagram Professional accounts** via official Meta business APIs.
+Unify is a production-ready Flutter mobile SaaS application for unified customer messaging across **Facebook Pages** and **Instagram Professional accounts** via official Meta business APIs.
 
 ---
 
@@ -17,7 +17,7 @@ Algora is a production-ready Flutter mobile SaaS application for unified custome
 ## 🏗️ Folder Hierarchy & File Structure
 
 ```
-algora/
+unify/
 ├── pubspec.yaml                                      # Dependencies (Riverpod, Dio, GoogleFonts, Intl)
 ├── analysis_options.yaml                             # Production Flutter linting rules
 ├── README.md                                         # Project documentation
@@ -52,17 +52,17 @@ algora/
     │   │   ├── socket_service.dart                   # WebSocket client & topic subscriptions
     │   │   └── mock_socket_engine.dart               # Live incoming message simulation engine
     │   └── widgets/
-    │       ├── algora_button.dart                    # Button with primary, gradient, secondary variants
-    │       ├── algora_text_field.dart                # Styled input fields with validation
-    │       ├── algora_card.dart                      # Glassmorphic surface containers
-    │       ├── algora_badge.dart                     # Status and counter badge
+    │       ├── unify_button.dart                    # Button with primary, gradient, secondary variants
+    │       ├── unify_text_field.dart                # Styled input fields with validation
+    │       ├── unify_card.dart                      # Glassmorphic surface containers
+    │       ├── unify_badge.dart                     # Status and counter badge
     │       ├── channel_badge.dart                    # Branded Facebook & Instagram badges
     │       ├── status_badge.dart                     # Open, Pending, Resolved badges
     │       ├── user_avatar.dart                      # Avatar with channel icon & online indicator
     │       ├── empty_state_view.dart                 # Empty state handler
     │       ├── error_state_view.dart                 # Error state with retry action
     │       ├── loading_state_view.dart               # Loading indicators
-    │       └── algora_nav_shell.dart                 # Bottom navigation with unread badges
+    │       └── unify_nav_shell.dart                 # Bottom navigation with unread badges
     └── features/
         ├── auth/
         │   ├── data/
@@ -144,7 +144,7 @@ algora/
 
 1. Navigate to the project directory:
    ```bash
-   cd C:\Users\u\.gemini\antigravity-ide\scratch\algora
+   cd C:\Users\u\.gemini\antigravity-ide\scratch\unify
    ```
 2. Fetch dependencies:
    ```bash

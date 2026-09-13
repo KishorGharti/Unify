@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
-import 'package:algora/core/constants/api_endpoints.dart';
-import 'package:algora/core/errors/app_exceptions.dart';
-import 'package:algora/core/network/api_client.dart';
-import 'package:algora/core/widgets/status_badge.dart';
+import 'package:unify/core/constants/api_endpoints.dart';
+import 'package:unify/core/errors/app_exceptions.dart';
+import 'package:unify/core/network/api_client.dart';
+import 'package:unify/core/widgets/status_badge.dart';
 import 'models/conversation_model.dart';
 
 abstract class InboxRepository {
@@ -15,20 +15,12 @@ abstract class InboxRepository {
   Future<void> updateNickname(String conversationId, String? nickname);
 }
 
-/// Talks to the real backend (see backend/src/controllers/inbox.controller.ts)
-/// - conversations come from real Facebook/Instagram messages received via
-/// the Meta webhook, once a channel is connected. No sample/demo data here;
-/// an empty inbox means no messages have come in yet, not a bug.
-class AlgoraInboxRepository implements InboxRepository {
+class UnifyInboxRepository implements InboxRepository {
   final ApiClient apiClient;
 
-  // Nickname is a client-side-only label (see unified_inbox_screen.dart) -
-  // the backend has no column for it, so it's kept here, in memory, per
-  // conversation id. It intentionally doesn't survive an app restart yet;
-  // move it server-side (a field on Conversation) if it needs to.
   final Map<String, String> _nicknames = {};
 
-  AlgoraInboxRepository({required this.apiClient});
+  UnifyInboxRepository({required this.apiClient});
 
   @override
   Future<List<ConversationModel>> getConversations(String tenantId) async {
@@ -99,7 +91,7 @@ class AlgoraInboxRepository implements InboxRepository {
 
   @override
   Future<void> updateNickname(String conversationId, String? nickname) async {
-    // Client-side only - see the field comment above.
+
     if (nickname == null || nickname.isEmpty) {
       _nicknames.remove(conversationId);
     } else {
@@ -109,10 +101,7 @@ class AlgoraInboxRepository implements InboxRepository {
 
   @override
   Future<void> markAsRead(String conversationId) async {
-    // The backend doesn't track a per-conversation read/unread column yet
-    // (see inbox.controller.ts - unread_count is always 0), so there's
-    // nothing to persist here today. Kept as a real method so the caller
-    // doesn't need to know that; wire it up once that column exists.
+
   }
 
   ConversationModel _withNickname(ConversationModel conv) {

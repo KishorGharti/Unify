@@ -1,7 +1,7 @@
 {
-  "name": "algora-backend",
+  "name": "unify-backend",
   "version": "1.0.0",
-  "description": "Algora backend - Meta (Facebook & Instagram) messaging integration API",
+  "description": "Unify backend - Meta (Facebook & Instagram) messaging integration API",
   "main": "dist/index.js",
   "private": true,
   "scripts": {

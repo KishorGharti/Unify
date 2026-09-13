@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:algora/core/constants/app_constants.dart';
-import 'package:algora/core/theme/app_colors.dart';
-import 'package:algora/core/theme/app_dimensions.dart';
-import 'package:algora/core/theme/app_typography.dart';
-import 'package:algora/core/widgets/algora_badge.dart';
-import 'package:algora/core/widgets/algora_card.dart';
-import 'package:algora/core/widgets/user_avatar.dart';
-import 'package:algora/features/auth/presentation/providers/auth_provider.dart';
-import 'package:algora/features/auth/presentation/screens/login_screen.dart';
-import 'package:algora/features/channels/presentation/screens/connected_accounts_screen.dart';
-import 'package:algora/features/team/presentation/screens/team_members_screen.dart';
-import 'package:algora/features/settings/presentation/providers/settings_provider.dart';
+import 'package:unify/core/constants/app_constants.dart';
+import 'package:unify/core/theme/app_colors.dart';
+import 'package:unify/core/theme/app_dimensions.dart';
+import 'package:unify/core/theme/app_typography.dart';
+import 'package:unify/core/widgets/unify_badge.dart';
+import 'package:unify/core/widgets/unify_card.dart';
+import 'package:unify/core/widgets/user_avatar.dart';
+import 'package:unify/features/auth/presentation/providers/auth_provider.dart';
+import 'package:unify/features/auth/presentation/screens/login_screen.dart';
+import 'package:unify/features/channels/presentation/screens/connected_accounts_screen.dart';
+import 'package:unify/features/team/presentation/screens/team_members_screen.dart';
+import 'package:unify/features/settings/presentation/providers/settings_provider.dart';
 import 'notifications_screen.dart';
 import 'user_profile_screen.dart';
 
@@ -70,7 +70,7 @@ class SettingsScreen extends ConsumerWidget {
                   final isCurrent = t.id == user.tenantId;
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 10),
-                    child: AlgoraCard(
+                    child: UnifyCard(
                       onTap: () {
                         ref.read(authStateProvider.notifier).switchTenant(t.id);
                         Navigator.of(ctx).pop();
@@ -126,7 +126,7 @@ class SettingsScreen extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Log Out'),
-        content: const Text('Are you sure you want to sign out from your Algora workspace?'),
+        content: const Text('Are you sure you want to sign out from your Unify workspace?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
@@ -169,8 +169,8 @@ class SettingsScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // User & Workspace Quick Card
-            AlgoraCard(
+
+            UnifyCard(
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const UserProfileScreen()),
@@ -200,7 +200,7 @@ class SettingsScreen extends ConsumerWidget {
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            AlgoraBadge(
+                            UnifyBadge(
                               text: user?.role.displayName ?? 'Workspace Owner',
                               backgroundColor: AppColors.primary.withOpacity(0.12),
                               textColor: AppColors.primaryLight,
@@ -217,7 +217,6 @@ class SettingsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 20),
 
-            // Section: Business & Multi-Tenant
             Text(
               'Business & Workspace',
               style: AppTypography.heading3(
@@ -225,7 +224,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 10),
-            AlgoraCard(
+            UnifyCard(
               padding: EdgeInsets.zero,
               child: Column(
                 children: [
@@ -280,7 +279,6 @@ class SettingsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 24),
 
-            // Section: App Preferences
             Text(
               'App Preferences',
               style: AppTypography.heading3(
@@ -288,7 +286,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 10),
-            AlgoraCard(
+            UnifyCard(
               padding: EdgeInsets.zero,
               child: Column(
                 children: [
@@ -344,8 +342,7 @@ class SettingsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 24),
 
-            // Section: Sign Out
-            AlgoraCard(
+            UnifyCard(
               onTap: () => _showLogoutDialog(context, ref),
               padding: const EdgeInsets.all(14),
               child: Row(

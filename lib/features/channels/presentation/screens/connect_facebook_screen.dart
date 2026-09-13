@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:algora/core/theme/app_colors.dart';
-import 'package:algora/core/theme/app_dimensions.dart';
-import 'package:algora/core/theme/app_typography.dart';
-import 'package:algora/core/widgets/algora_button.dart';
-import 'package:algora/core/widgets/algora_card.dart';
-import 'package:algora/core/widgets/loading_state_view.dart';
-import 'package:algora/features/channels/presentation/providers/channels_provider.dart';
+import 'package:unify/core/theme/app_colors.dart';
+import 'package:unify/core/theme/app_dimensions.dart';
+import 'package:unify/core/theme/app_typography.dart';
+import 'package:unify/core/widgets/unify_button.dart';
+import 'package:unify/core/widgets/unify_card.dart';
+import 'package:unify/core/widgets/loading_state_view.dart';
+import 'package:unify/features/channels/presentation/providers/channels_provider.dart';
 
-/// Real Meta OAuth: opens Facebook's login dialog in the system browser (see
-/// backend/README.md section 2-3). There's no deep link registered to bring
-/// the user straight back into the app after they approve it, so this asks
-/// them to return and tap Continue manually once they're done.
 class ConnectFacebookScreen extends ConsumerStatefulWidget {
   const ConnectFacebookScreen({Key? key}) : super(key: key);
 
@@ -130,7 +126,7 @@ class _ConnectFacebookScreenState extends ConsumerState<ConnectFacebookScreen> {
         return _buildStatusStep(
           isDark: isDark,
           title: 'Opening Facebook Login...',
-          subtitle: 'Requesting an authorization URL from the Algora server',
+          subtitle: 'Requesting an authorization URL from the Unify server',
         );
       case _Step.waitingForReturn:
         return _buildWaitingForReturnStep(isDark);
@@ -195,16 +191,16 @@ class _ConnectFacebookScreenState extends ConsumerState<ConnectFacebookScreen> {
           ),
         ),
         const SizedBox(height: 12),
-        _buildPermissionItem('pages_messaging', 'Allows Algora to receive and reply to Messenger inquiries from customers in real-time.'),
+        _buildPermissionItem('pages_messaging', 'Allows Unify to receive and reply to Messenger inquiries from customers in real-time.'),
         const SizedBox(height: 8),
         _buildPermissionItem('pages_manage_metadata', 'Enables real-time webhook subscriptions for instant message notifications.'),
         const SizedBox(height: 8),
         _buildPermissionItem('pages_read_engagement', 'Allows retrieving customer name, profile avatar, and conversation status.'),
         const Spacer(),
-        AlgoraButton(
+        UnifyButton(
           text: 'Continue to Facebook Authorization',
           onPressed: _startOAuthFlow,
-          variant: AlgoraButtonVariant.gradient,
+          variant: UnifyButtonVariant.gradient,
           icon: Icons.open_in_browser_rounded,
           width: double.infinity,
         ),
@@ -214,7 +210,7 @@ class _ConnectFacebookScreenState extends ConsumerState<ConnectFacebookScreen> {
   }
 
   Widget _buildPermissionItem(String code, String desc) {
-    return AlgoraCard(
+    return UnifyCard(
       padding: const EdgeInsets.all(12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -323,10 +319,10 @@ class _ConnectFacebookScreenState extends ConsumerState<ConnectFacebookScreen> {
           ),
         ],
         const SizedBox(height: 32),
-        AlgoraButton(
+        UnifyButton(
           text: "I've Authorized - Continue",
           onPressed: _continueAfterBrowser,
-          variant: AlgoraButtonVariant.gradient,
+          variant: UnifyButtonVariant.gradient,
           width: double.infinity,
         ),
         const SizedBox(height: 8),
@@ -351,7 +347,7 @@ class _ConnectFacebookScreenState extends ConsumerState<ConnectFacebookScreen> {
           const SizedBox(height: 12),
           Text(_error!, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.error)),
           const SizedBox(height: 20),
-          AlgoraButton(text: 'Try Again', onPressed: _continueAfterBrowser, variant: AlgoraButtonVariant.outline),
+          UnifyButton(text: 'Try Again', onPressed: _continueAfterBrowser, variant: UnifyButtonVariant.outline),
         ],
       );
     }
@@ -376,7 +372,7 @@ class _ConnectFacebookScreenState extends ConsumerState<ConnectFacebookScreen> {
         ),
         const SizedBox(height: 4),
         Text(
-          'Choose the Facebook Business Page you want to route into Algora Unified Inbox:',
+          'Choose the Facebook Business Page you want to route into Unify Unified Inbox:',
           style: AppTypography.body2(
             color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
           ),
@@ -391,7 +387,7 @@ class _ConnectFacebookScreenState extends ConsumerState<ConnectFacebookScreen> {
               final isSelected = _selectedPageId == page['id'];
               final alreadyConnected = page['is_connected'] == true;
 
-              return AlgoraCard(
+              return UnifyCard(
                 onTap: alreadyConnected
                     ? null
                     : () {
@@ -450,10 +446,10 @@ class _ConnectFacebookScreenState extends ConsumerState<ConnectFacebookScreen> {
             },
           ),
         ),
-        AlgoraButton(
+        UnifyButton(
           text: 'Connect Page to Inbox',
           onPressed: _connectSelectedPage,
-          variant: AlgoraButtonVariant.gradient,
+          variant: UnifyButtonVariant.gradient,
           width: double.infinity,
         ),
         const SizedBox(height: 12),
