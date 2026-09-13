@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_dimensions.dart';
 import '../theme/app_typography.dart';
 
-class AlgoraBadge extends StatelessWidget {
+class UnifyBadge extends StatelessWidget {
   final String text;
   final Color backgroundColor;
   final Color textColor;
@@ -10,7 +10,7 @@ class AlgoraBadge extends StatelessWidget {
   final double? fontSize;
   final EdgeInsetsGeometry padding;
 
-  const AlgoraBadge({
+  const UnifyBadge({
     Key? key,
     required this.text,
     required this.backgroundColor,

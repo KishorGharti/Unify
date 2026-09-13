@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:algora/core/theme/app_colors.dart';
-import 'package:algora/core/theme/app_dimensions.dart';
-import 'package:algora/core/theme/app_typography.dart';
-import 'package:algora/core/utils/date_formatter.dart';
-import 'package:algora/core/widgets/algora_badge.dart';
-import 'package:algora/core/widgets/algora_button.dart';
-import 'package:algora/core/widgets/algora_card.dart';
-import 'package:algora/core/widgets/algora_text_field.dart';
-import 'package:algora/core/widgets/user_avatar.dart';
-import 'package:algora/features/auth/presentation/providers/auth_provider.dart';
+import 'package:unify/core/theme/app_colors.dart';
+import 'package:unify/core/theme/app_dimensions.dart';
+import 'package:unify/core/theme/app_typography.dart';
+import 'package:unify/core/utils/date_formatter.dart';
+import 'package:unify/core/widgets/unify_badge.dart';
+import 'package:unify/core/widgets/unify_button.dart';
+import 'package:unify/core/widgets/unify_card.dart';
+import 'package:unify/core/widgets/unify_text_field.dart';
+import 'package:unify/core/widgets/user_avatar.dart';
+import 'package:unify/features/auth/presentation/providers/auth_provider.dart';
 
 class UserProfileScreen extends ConsumerWidget {
   const UserProfileScreen({Key? key}) : super(key: key);
@@ -28,13 +28,13 @@ class UserProfileScreen extends ConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              AlgoraTextField(
+              UnifyTextField(
                 label: 'Current Password',
                 controller: oldPasswordController,
                 isPassword: true,
               ),
               const SizedBox(height: 12),
-              AlgoraTextField(
+              UnifyTextField(
                 label: 'New Password',
                 controller: newPasswordController,
                 isPassword: true,
@@ -80,8 +80,8 @@ class UserProfileScreen extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Column(
           children: [
-            // User Header Card
-            AlgoraCard(
+
+            UnifyCard(
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
@@ -104,7 +104,7 @@ class UserProfileScreen extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  AlgoraBadge(
+                  UnifyBadge(
                     text: user?.role.displayName ?? 'Workspace Owner',
                     backgroundColor: AppColors.primary.withOpacity(0.12),
                     textColor: AppColors.primaryLight,
@@ -114,8 +114,7 @@ class UserProfileScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 20),
 
-            // Account & Security Settings Card
-            AlgoraCard(
+            UnifyCard(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,7 +150,7 @@ class UserProfileScreen extends ConsumerWidget {
                       ),
                     ),
                     subtitle: const Text('Enforced by Workspace Policy'),
-                    trailing: const AlgoraBadge(
+                    trailing: const UnifyBadge(
                       text: 'Enabled',
                       backgroundColor: AppColors.success,
                       textColor: Colors.white,
@@ -174,8 +173,7 @@ class UserProfileScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 24),
 
-            // Multi-tenant info
-            AlgoraCard(
+            UnifyCard(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

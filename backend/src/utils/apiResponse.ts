@@ -1,7 +1,5 @@
 import { Response } from 'express';
 
-// Matches the envelope parsed by lib/core/network/api_response.dart:
-// { success, message, data, status_code, meta }
 export function ok(res: Response, data: unknown, status = 200, message?: string) {
   return res.status(status).json({ success: true, message: message ?? null, data, status_code: status, meta: null });
 }

@@ -32,7 +32,7 @@ app.use(
 
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
-// Mounted to match ApiEndpoints.baseUrl = 'https://api.algora.io/v1' in
+// Mounted to match ApiEndpoints.baseUrl = 'https://api.unify.io/v1' in
 // lib/core/constants/api_endpoints.dart - point the Flutter app's baseUrl at
 // http://<this-host>:{PORT}/api/v1 (or your deployed URL) during development.
 app.use('/api/v1/auth', authRoutes);
@@ -56,6 +56,6 @@ const httpServer = createServer(app);
 initSocketServer(httpServer);
 
 httpServer.listen(env.port, () => {
-  console.log(`Algora backend listening on http://localhost:${env.port}`);
+  console.log(`Unify backend listening on http://localhost:${env.port}`);
   console.log(`Webhook callback URL to register with Meta: <public-url>/webhooks/meta`);
 });

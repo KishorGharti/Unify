@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/app_dimensions.dart';
 
-/// Fully-rounded (pill) text field used on the auth screens (Login/Sign Up),
-/// matching the reference design - distinct from AlgoraTextField's
-/// rounded-rectangle style used across the rest of the app.
-class AlgoraPillField extends StatefulWidget {
+class UnifyPillField extends StatefulWidget {
   final String hint;
   final TextEditingController? controller;
   final IconData icon;
@@ -12,7 +9,7 @@ class AlgoraPillField extends StatefulWidget {
   final TextInputType keyboardType;
   final String? Function(String?)? validator;
 
-  const AlgoraPillField({
+  const UnifyPillField({
     Key? key,
     required this.hint,
     this.controller,
@@ -23,10 +20,10 @@ class AlgoraPillField extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<AlgoraPillField> createState() => _AlgoraPillFieldState();
+  State<UnifyPillField> createState() => _UnifyPillFieldState();
 }
 
-class _AlgoraPillFieldState extends State<AlgoraPillField> {
+class _UnifyPillFieldState extends State<UnifyPillField> {
   bool _obscure = true;
 
   @override

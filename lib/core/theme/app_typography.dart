@@ -62,8 +62,6 @@ class AppTypography {
         letterSpacing: 0.2,
       );
 
-  // The "ALGORA" logo wordmark on auth screens - condensed serif, wide
-  // letter-spacing, matching the brand mark (not used for body text).
   static TextStyle wordmark({required Color color, double fontSize = 40}) => GoogleFonts.playfairDisplay(
         fontSize: fontSize,
         fontWeight: FontWeight.w700,

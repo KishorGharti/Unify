@@ -1,4 +1,4 @@
-package com.algora.algora
+package com.unify.unify
 
 import io.flutter.embedding.android.FlutterActivity
 

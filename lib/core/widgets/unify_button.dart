@@ -3,22 +3,22 @@ import '../theme/app_colors.dart';
 import '../theme/app_dimensions.dart';
 import '../theme/app_typography.dart';
 
-enum AlgoraButtonVariant { primary, secondary, outline, danger, ghost, gradient }
+enum UnifyButtonVariant { primary, secondary, outline, danger, ghost, gradient }
 
-class AlgoraButton extends StatelessWidget {
+class UnifyButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
-  final AlgoraButtonVariant variant;
+  final UnifyButtonVariant variant;
   final bool isLoading;
   final IconData? icon;
   final double? width;
   final double height;
 
-  const AlgoraButton({
+  const UnifyButton({
     Key? key,
     required this.text,
     required this.onPressed,
-    this.variant = AlgoraButtonVariant.primary,
+    this.variant = UnifyButtonVariant.primary,
     this.isLoading = false,
     this.icon,
     this.width,
@@ -54,7 +54,7 @@ class AlgoraButton extends StatelessWidget {
       ],
     );
 
-    if (variant == AlgoraButtonVariant.gradient) {
+    if (variant == UnifyButtonVariant.gradient) {
       return Container(
         width: width,
         height: height,
@@ -93,52 +93,52 @@ class AlgoraButton extends StatelessWidget {
 
   Color _getTextColor(bool isDark) {
     switch (variant) {
-      case AlgoraButtonVariant.primary:
-      case AlgoraButtonVariant.gradient:
-      case AlgoraButtonVariant.danger:
+      case UnifyButtonVariant.primary:
+      case UnifyButtonVariant.gradient:
+      case UnifyButtonVariant.danger:
         return Colors.white;
-      case AlgoraButtonVariant.secondary:
+      case UnifyButtonVariant.secondary:
         return isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
-      case AlgoraButtonVariant.outline:
-      case AlgoraButtonVariant.ghost:
+      case UnifyButtonVariant.outline:
+      case UnifyButtonVariant.ghost:
         return AppColors.primary;
     }
   }
 
   ButtonStyle _getButtonStyle(bool isDark) {
     switch (variant) {
-      case AlgoraButtonVariant.primary:
+      case UnifyButtonVariant.primary:
         return ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
           shape: const RoundedRectangleBorder(borderRadius: AppDimensions.roundedLg),
           elevation: 2,
         );
-      case AlgoraButtonVariant.secondary:
+      case UnifyButtonVariant.secondary:
         return ElevatedButton.styleFrom(
           backgroundColor: isDark ? AppColors.darkCard : AppColors.lightInputBg,
           foregroundColor: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
           shape: const RoundedRectangleBorder(borderRadius: AppDimensions.roundedLg),
           elevation: 0,
         );
-      case AlgoraButtonVariant.outline:
+      case UnifyButtonVariant.outline:
         return OutlinedButton.styleFrom(
           side: const BorderSide(color: AppColors.primary, width: 1.5),
           shape: const RoundedRectangleBorder(borderRadius: AppDimensions.roundedLg),
           elevation: 0,
         );
-      case AlgoraButtonVariant.danger:
+      case UnifyButtonVariant.danger:
         return ElevatedButton.styleFrom(
           backgroundColor: AppColors.error,
           foregroundColor: Colors.white,
           shape: const RoundedRectangleBorder(borderRadius: AppDimensions.roundedLg),
           elevation: 0,
         );
-      case AlgoraButtonVariant.ghost:
+      case UnifyButtonVariant.ghost:
         return TextButton.styleFrom(
           shape: const RoundedRectangleBorder(borderRadius: AppDimensions.roundedLg),
         );
-      case AlgoraButtonVariant.gradient:
+      case UnifyButtonVariant.gradient:
         return ElevatedButton.styleFrom();
     }
   }

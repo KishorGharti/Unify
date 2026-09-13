@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:algora/core/theme/app_colors.dart';
-import 'package:algora/core/theme/app_dimensions.dart';
-import 'package:algora/core/theme/app_typography.dart';
-import 'package:algora/core/widgets/algora_button.dart';
-import 'package:algora/core/widgets/algora_card.dart';
-import 'package:algora/core/widgets/loading_state_view.dart';
-import 'package:algora/features/channels/presentation/providers/channels_provider.dart';
+import 'package:unify/core/theme/app_colors.dart';
+import 'package:unify/core/theme/app_dimensions.dart';
+import 'package:unify/core/theme/app_typography.dart';
+import 'package:unify/core/widgets/unify_button.dart';
+import 'package:unify/core/widgets/unify_card.dart';
+import 'package:unify/core/widgets/loading_state_view.dart';
+import 'package:unify/features/channels/presentation/providers/channels_provider.dart';
 
-/// Real Meta OAuth - Instagram Business/Creator accounts are discovered
-/// through the same Facebook Login flow as Pages (an IG account is always
-/// linked to a Page). See connect_facebook_screen.dart for the browser
-/// hand-off details; this mirrors it for the Instagram picker.
 class ConnectInstagramScreen extends ConsumerStatefulWidget {
   const ConnectInstagramScreen({Key? key}) : super(key: key);
 
@@ -20,14 +16,25 @@ class ConnectInstagramScreen extends ConsumerStatefulWidget {
   ConsumerState<ConnectInstagramScreen> createState() => _ConnectInstagramScreenState();
 }
 
-enum _Step { permissions, openingBrowser, waitingForReturn, picker }
+enum _Step { chooseMethod, permissions, openingBrowser, waitingForReturn, picker }
+
+enum _AuthMethod { facebookLinked, instagramLogin }
 
 class _ConnectInstagramScreenState extends ConsumerState<ConnectInstagramScreen> {
-  _Step _step = _Step.permissions;
+  _Step _step = _Step.chooseMethod;
+  _AuthMethod? _authMethod;
   bool _isLoadingAccounts = false;
   String? _error;
   List<Map<String, dynamic>> _accounts = [];
   String? _selectedAccountId;
+
+  void _chooseMethod(_AuthMethod method) {
+    setState(() {
+      _authMethod = method;
+      _step = _Step.permissions;
+      _error = null;
+    });
+  }
 
   Future<void> _startInstagramAuth() async {
     setState(() {
@@ -37,7 +44,9 @@ class _ConnectInstagramScreenState extends ConsumerState<ConnectInstagramScreen>
 
     try {
       final repo = ref.read(channelRepositoryProvider);
-      final oauthUrl = await repo.startMetaOAuth();
+      final oauthUrl = _authMethod == _AuthMethod.instagramLogin
+          ? await repo.startInstagramLoginOAuth()
+          : await repo.startMetaOAuth();
       final uri = Uri.parse(oauthUrl);
 
       final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
@@ -63,7 +72,9 @@ class _ConnectInstagramScreenState extends ConsumerState<ConnectInstagramScreen>
 
     try {
       final repo = ref.read(channelRepositoryProvider);
-      final accounts = await repo.fetchAvailableInstagramAccounts();
+      final accounts = _authMethod == _AuthMethod.instagramLogin
+          ? await repo.fetchAvailableInstagramLoginAccounts()
+          : await repo.fetchAvailableInstagramAccounts();
       if (!mounted) return;
       setState(() {
         _accounts = accounts;
@@ -83,11 +94,16 @@ class _ConnectInstagramScreenState extends ConsumerState<ConnectInstagramScreen>
     if (_selectedAccountId == null) return;
     final selected = _accounts.firstWhere((a) => a['id'] == _selectedAccountId);
 
-    final success = await ref.read(channelsProvider.notifier).connectInstagramAccount(
-          igUserId: selected['id'] as String,
-          pageId: selected['_linkedPageId'] as String,
-          username: selected['username'] as String,
-        );
+    final success = _authMethod == _AuthMethod.instagramLogin
+        ? await ref.read(channelsProvider.notifier).connectInstagramLoginAccount(
+              igUserId: selected['id'] as String,
+              username: selected['username'] as String,
+            )
+        : await ref.read(channelsProvider.notifier).connectInstagramAccount(
+              igUserId: selected['id'] as String,
+              pageId: selected['_linkedPageId'] as String,
+              username: selected['username'] as String,
+            );
 
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -125,19 +141,94 @@ class _ConnectInstagramScreenState extends ConsumerState<ConnectInstagramScreen>
 
   Widget _buildBody(bool isDark) {
     switch (_step) {
+      case _Step.chooseMethod:
+        return _buildChooseMethodStep(isDark);
       case _Step.permissions:
         return _buildRequirementsStep(isDark);
       case _Step.openingBrowser:
         return _buildStatusStep(
           isDark: isDark,
           title: 'Opening Instagram Login...',
-          subtitle: 'Requesting an authorization URL from the Algora server',
+          subtitle: 'Requesting an authorization URL from the Unify server',
         );
       case _Step.waitingForReturn:
         return _buildWaitingForReturnStep(isDark);
       case _Step.picker:
         return _buildAccountPickerStep(isDark);
     }
+  }
+
+  Widget _buildChooseMethodStep(bool isDark) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'How is this Instagram account set up?',
+          style: AppTypography.heading2(
+            color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          "Meta offers two separate ways to connect Instagram messaging. Pick whichever matches this account.",
+          style: AppTypography.body2(
+            color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryDark,
+          ),
+        ),
+        const SizedBox(height: 24),
+        _buildMethodCard(
+          isDark: isDark,
+          icon: Icons.facebook_rounded,
+          title: 'Linked to a Facebook Page',
+          subtitle: 'The Instagram Business/Creator account is connected to a Facebook Page. You\'ll log in with Facebook and pick the Page.',
+          onTap: () => _chooseMethod(_AuthMethod.facebookLinked),
+        ),
+        const SizedBox(height: 12),
+        _buildMethodCard(
+          isDark: isDark,
+          icon: Icons.camera_alt_rounded,
+          title: 'Direct Instagram Login',
+          subtitle: 'No Facebook Page involved - log in with Instagram directly (standalone Instagram Login).',
+          onTap: () => _chooseMethod(_AuthMethod.instagramLogin),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMethodCard({
+    required bool isDark,
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return UnifyCard(
+      onTap: onTap,
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: const BoxDecoration(gradient: AppColors.instagramGradient, shape: BoxShape.circle),
+            child: Icon(icon, color: Colors.white, size: 22),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: AppTypography.subtitle1(color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight)),
+                const SizedBox(height: 2),
+                Text(subtitle, style: AppTypography.caption(color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryDark)),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: AppColors.primary),
+        ],
+      ),
+    );
   }
 
   Widget _buildRequirementsStep(bool isDark) {
@@ -167,7 +258,9 @@ class _ConnectInstagramScreenState extends ConsumerState<ConnectInstagramScreen>
                     ),
                   ),
                   Text(
-                    'Instagram Graph API Integration',
+                    _authMethod == _AuthMethod.instagramLogin
+                        ? 'Standalone Instagram Login'
+                        : 'Instagram Graph API Integration (via Facebook Page)',
                     style: AppTypography.caption(color: AppColors.instagram),
                   ),
                 ],
@@ -190,7 +283,6 @@ class _ConnectInstagramScreenState extends ConsumerState<ConnectInstagramScreen>
           const SizedBox(height: 16),
         ],
 
-        // Pre-requisite checklist
         Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
@@ -205,7 +297,9 @@ class _ConnectInstagramScreenState extends ConsumerState<ConnectInstagramScreen>
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'Meta requires Instagram accounts to be set as "Business" or "Creator" and linked to a Facebook Page to enable API messaging.',
+                  _authMethod == _AuthMethod.instagramLogin
+                      ? 'Meta requires Instagram accounts to be set as "Business" or "Creator" to enable API messaging. No Facebook Page is needed for this method.'
+                      : 'Meta requires Instagram accounts to be set as "Business" or "Creator" and linked to a Facebook Page to enable API messaging.',
                   style: AppTypography.body2(
                     color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
                   ),
@@ -223,24 +317,37 @@ class _ConnectInstagramScreenState extends ConsumerState<ConnectInstagramScreen>
           ),
         ),
         const SizedBox(height: 10),
-        _buildPermissionItem('instagram_basic', 'Access basic profile information and username.'),
-        const SizedBox(height: 8),
-        _buildPermissionItem('instagram_manage_messages', 'Receive and reply to Direct Messages, story mentions, and replies.'),
+        if (_authMethod == _AuthMethod.instagramLogin) ...[
+          _buildPermissionItem('instagram_business_basic', 'Access basic profile information and username.'),
+          const SizedBox(height: 8),
+          _buildPermissionItem('instagram_business_manage_messages', 'Receive and reply to Direct Messages, story mentions, and replies.'),
+        ] else ...[
+          _buildPermissionItem('instagram_basic', 'Access basic profile information and username.'),
+          const SizedBox(height: 8),
+          _buildPermissionItem('instagram_manage_messages', 'Receive and reply to Direct Messages, story mentions, and replies.'),
+        ],
         const Spacer(),
-        AlgoraButton(
-          text: 'Login with Meta / Instagram',
+        UnifyButton(
+          text: _authMethod == _AuthMethod.instagramLogin ? 'Login with Instagram' : 'Login with Meta / Instagram',
           onPressed: _startInstagramAuth,
-          variant: AlgoraButtonVariant.gradient,
+          variant: UnifyButtonVariant.gradient,
           icon: Icons.open_in_browser_rounded,
           width: double.infinity,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
+        Center(
+          child: TextButton(
+            onPressed: () => setState(() => _step = _Step.chooseMethod),
+            child: const Text('Choose a different connection method'),
+          ),
+        ),
+        const SizedBox(height: 4),
       ],
     );
   }
 
   Widget _buildPermissionItem(String code, String desc) {
-    return AlgoraCard(
+    return UnifyCard(
       padding: const EdgeInsets.all(12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -349,10 +456,10 @@ class _ConnectInstagramScreenState extends ConsumerState<ConnectInstagramScreen>
           ),
         ],
         const SizedBox(height: 32),
-        AlgoraButton(
+        UnifyButton(
           text: "I've Authorized - Continue",
           onPressed: _continueAfterBrowser,
-          variant: AlgoraButtonVariant.gradient,
+          variant: UnifyButtonVariant.gradient,
           width: double.infinity,
         ),
         const SizedBox(height: 8),
@@ -377,7 +484,7 @@ class _ConnectInstagramScreenState extends ConsumerState<ConnectInstagramScreen>
           const SizedBox(height: 12),
           Text(_error!, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.error)),
           const SizedBox(height: 20),
-          AlgoraButton(text: 'Try Again', onPressed: _continueAfterBrowser, variant: AlgoraButtonVariant.outline),
+          UnifyButton(text: 'Try Again', onPressed: _continueAfterBrowser, variant: UnifyButtonVariant.outline),
         ],
       );
     }
@@ -402,7 +509,7 @@ class _ConnectInstagramScreenState extends ConsumerState<ConnectInstagramScreen>
         ),
         const SizedBox(height: 4),
         Text(
-          'Choose the Instagram Business account to connect to Algora:',
+          'Choose the Instagram Business account to connect to Unify:',
           style: AppTypography.body2(
             color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryDark,
           ),
@@ -417,7 +524,7 @@ class _ConnectInstagramScreenState extends ConsumerState<ConnectInstagramScreen>
               final isSelected = _selectedAccountId == acc['id'];
               final alreadyConnected = acc['is_connected'] == true;
 
-              return AlgoraCard(
+              return UnifyCard(
                 onTap: alreadyConnected
                     ? null
                     : () {
@@ -456,10 +563,11 @@ class _ConnectInstagramScreenState extends ConsumerState<ConnectInstagramScreen>
                               color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
                             ),
                           ),
-                          Text(
-                            'Linked Page: ${acc['linked_page']}',
-                            style: AppTypography.caption(color: AppColors.textMutedDark),
-                          ),
+                          if (acc['linked_page'] != null)
+                            Text(
+                              'Linked Page: ${acc['linked_page']}',
+                              style: AppTypography.caption(color: AppColors.textMutedDark),
+                            ),
                         ],
                       ),
                     ),
@@ -480,10 +588,10 @@ class _ConnectInstagramScreenState extends ConsumerState<ConnectInstagramScreen>
             },
           ),
         ),
-        AlgoraButton(
+        UnifyButton(
           text: 'Connect Instagram to Inbox',
           onPressed: _connectSelectedAccount,
-          variant: AlgoraButtonVariant.gradient,
+          variant: UnifyButtonVariant.gradient,
           width: double.infinity,
         ),
         const SizedBox(height: 12),

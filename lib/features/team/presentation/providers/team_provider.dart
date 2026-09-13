@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:algora/features/auth/data/models/user_model.dart';
-import 'package:algora/features/auth/presentation/providers/auth_provider.dart';
-import 'package:algora/features/team/data/models/team_member_model.dart';
+import 'package:unify/features/auth/data/models/user_model.dart';
+import 'package:unify/features/auth/presentation/providers/auth_provider.dart';
+import 'package:unify/features/team/data/models/team_member_model.dart';
 
 class TeamState {
   final bool isLoading;

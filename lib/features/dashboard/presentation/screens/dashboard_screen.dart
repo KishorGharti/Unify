@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:algora/core/constants/channel_config.dart';
-import 'package:algora/core/theme/app_colors.dart';
-import 'package:algora/core/theme/app_dimensions.dart';
-import 'package:algora/core/theme/app_typography.dart';
-import 'package:algora/core/utils/date_formatter.dart';
-import 'package:algora/core/widgets/algora_badge.dart';
-import 'package:algora/core/widgets/algora_button.dart';
-import 'package:algora/core/widgets/algora_card.dart';
-import 'package:algora/core/widgets/channel_badge.dart';
-import 'package:algora/core/widgets/loading_state_view.dart';
-import 'package:algora/features/auth/presentation/providers/auth_provider.dart';
-import 'package:algora/features/channels/presentation/screens/connected_accounts_screen.dart';
-import 'package:algora/features/team/presentation/screens/team_members_screen.dart';
-import 'package:algora/features/dashboard/presentation/providers/dashboard_provider.dart';
+import 'package:unify/core/constants/channel_config.dart';
+import 'package:unify/core/theme/app_colors.dart';
+import 'package:unify/core/theme/app_dimensions.dart';
+import 'package:unify/core/theme/app_typography.dart';
+import 'package:unify/core/utils/date_formatter.dart';
+import 'package:unify/core/widgets/unify_badge.dart';
+import 'package:unify/core/widgets/unify_button.dart';
+import 'package:unify/core/widgets/unify_card.dart';
+import 'package:unify/core/widgets/channel_badge.dart';
+import 'package:unify/core/widgets/loading_state_view.dart';
+import 'package:unify/features/auth/presentation/providers/auth_provider.dart';
+import 'package:unify/features/channels/presentation/screens/connected_accounts_screen.dart';
+import 'package:unify/features/team/presentation/screens/team_members_screen.dart';
+import 'package:unify/features/dashboard/presentation/providers/dashboard_provider.dart';
 
 class DashboardScreen extends ConsumerWidget {
   final ValueChanged<int>? onNavigateTab;
@@ -68,7 +68,7 @@ class DashboardScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Welcome Banner
+
                     Container(
                       padding: const EdgeInsets.all(18),
                       decoration: BoxDecoration(
@@ -121,7 +121,6 @@ class DashboardScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 24),
 
-                    // KPI Metrics Grid
                     Text(
                       'Live Performance & SLAs',
                       style: AppTypography.heading3(
@@ -182,7 +181,6 @@ class DashboardScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 24),
 
-                    // Channel Volume Breakdown
                     Text(
                       'Channel Distribution',
                       style: AppTypography.heading3(
@@ -197,7 +195,7 @@ class DashboardScreen extends ConsumerWidget {
                       final igPercent = channelTotal > 0 ? (igCount * 100 / channelTotal).round() : 0;
                       final fbPercent = channelTotal > 0 ? 100 - igPercent : 0;
 
-                      return AlgoraCard(
+                      return UnifyCard(
                         padding: const EdgeInsets.all(16),
                         child: Column(
                           children: [
@@ -258,7 +256,6 @@ class DashboardScreen extends ConsumerWidget {
                     }),
                     const SizedBox(height: 24),
 
-                    // Quick Actions
                     Text(
                       'Quick Actions',
                       style: AppTypography.heading3(
@@ -269,7 +266,7 @@ class DashboardScreen extends ConsumerWidget {
                     Row(
                       children: [
                         Expanded(
-                          child: AlgoraCard(
+                          child: UnifyCard(
                             onTap: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(builder: (_) => const ConnectedAccountsScreen()),
@@ -293,7 +290,7 @@ class DashboardScreen extends ConsumerWidget {
                         ),
                         const SizedBox(width: 10),
                         Expanded(
-                          child: AlgoraCard(
+                          child: UnifyCard(
                             onTap: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(builder: (_) => const TeamMembersScreen()),
@@ -317,7 +314,7 @@ class DashboardScreen extends ConsumerWidget {
                         ),
                         const SizedBox(width: 10),
                         Expanded(
-                          child: AlgoraCard(
+                          child: UnifyCard(
                             onTap: () => onNavigateTab?.call(4),
                             padding: const EdgeInsets.all(12),
                             child: Column(
@@ -339,7 +336,6 @@ class DashboardScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 24),
 
-                    // Recent Activity Feed
                     Text(
                       'Recent Activity Stream',
                       style: AppTypography.heading3(
@@ -357,7 +353,7 @@ class DashboardScreen extends ConsumerWidget {
                     ...dashboardState.metrics?.recentActivities.map((act) {
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 10),
-                            child: AlgoraCard(
+                            child: UnifyCard(
                               padding: const EdgeInsets.all(12),
                               child: Row(
                                 children: [
@@ -428,7 +424,7 @@ class DashboardScreen extends ConsumerWidget {
     required Color iconColor,
     required bool isDark,
   }) {
-    return AlgoraCard(
+    return UnifyCard(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

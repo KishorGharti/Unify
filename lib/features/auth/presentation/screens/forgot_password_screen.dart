@@ -1,20 +1,16 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:algora/core/theme/app_colors.dart';
-import 'package:algora/core/theme/app_typography.dart';
-import 'package:algora/core/utils/validators.dart';
-import 'package:algora/core/widgets/algora_gradient_pill_button.dart';
-import 'package:algora/core/widgets/algora_pill_field.dart';
-import 'package:algora/main.dart';
+import 'package:unify/core/theme/app_colors.dart';
+import 'package:unify/core/theme/app_typography.dart';
+import 'package:unify/core/utils/validators.dart';
+import 'package:unify/core/widgets/unify_gradient_pill_button.dart';
+import 'package:unify/core/widgets/unify_pill_field.dart';
+import 'package:unify/main.dart';
 import '../providers/auth_provider.dart';
 
 enum _ResetStep { email, reset }
 
-/// Two-step password reset: email a code to a (still admin-approved) email,
-/// then use it to set a new password. Also how a first-time user sets their
-/// very first password, since an admin's approval only ever generates a
-/// random, unknown one.
 class ForgotPasswordScreen extends ConsumerStatefulWidget {
   const ForgotPasswordScreen({Key? key}) : super(key: key);
 
@@ -111,7 +107,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
               child: Column(
                 children: [
                   const SizedBox(height: 40),
-                  Text('ALGORA', style: AppTypography.wordmark(color: Colors.white, fontSize: 32)),
+                  Text('UNIFY', style: AppTypography.wordmark(color: Colors.white, fontSize: 32)),
                   const SizedBox(height: 32),
                   Container(
                     width: double.infinity,
@@ -166,7 +162,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AlgoraPillField(
+          UnifyPillField(
             hint: 'Email',
             controller: _emailController,
             icon: Icons.email_outlined,
@@ -174,7 +170,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             validator: Validators.validateEmail,
           ),
           const SizedBox(height: 24),
-          AlgoraGradientPillButton(
+          UnifyGradientPillButton(
             text: 'Send Reset Code',
             onPressed: _handleSendCode,
             isLoading: _isLoading,
@@ -214,7 +210,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          AlgoraPillField(
+          UnifyPillField(
             hint: '6-Digit Code',
             controller: _codeController,
             icon: Icons.lock_outline_rounded,
@@ -230,7 +226,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          AlgoraPillField(
+          UnifyPillField(
             hint: 'New Password',
             controller: _newPasswordController,
             icon: Icons.lock_reset_rounded,
@@ -238,7 +234,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             validator: Validators.validatePassword,
           ),
           const SizedBox(height: 24),
-          AlgoraGradientPillButton(
+          UnifyGradientPillButton(
             text: 'Reset Password & Log In',
             onPressed: _handleResetPassword,
             isLoading: _isLoading,

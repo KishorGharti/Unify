@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_dimensions.dart';
 import '../theme/app_typography.dart';
-import 'algora_button.dart';
+import 'unify_button.dart';
 
 class ErrorStateView extends StatelessWidget {
   final String title;
@@ -57,10 +57,10 @@ class ErrorStateView extends StatelessWidget {
             ),
             if (onRetry != null) ...[
               const SizedBox(height: 20),
-              AlgoraButton(
+              UnifyButton(
                 text: 'Try Again',
                 onPressed: onRetry!,
-                variant: AlgoraButtonVariant.secondary,
+                variant: UnifyButtonVariant.secondary,
                 icon: Icons.refresh_rounded,
                 height: 40,
               ),

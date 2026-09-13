@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Algora Admin</title>
+<title>Unify Admin</title>
 <style>
   :root {
     --bg: #0f1120; --surface: #171a2e; --surface-2: #1e2238; --border: #2e3352;
@@ -53,7 +53,7 @@
 <div class="wrap">
 
   <div id="loginView">
-    <h1>Algora Admin</h1>
+    <h1>Unify Admin</h1>
     <p class="sub">Sign in to manage who's allowed to sign up.</p>
     <div class="card">
       <div id="loginMsg" class="msg"></div>
@@ -66,8 +66,8 @@
   <div id="appView">
     <div class="topbar">
       <div>
-        <h1>Algora Admin</h1>
-        <p class="sub" style="margin:0">Invite-only access control for the Algora app</p>
+        <h1>Unify Admin</h1>
+        <p class="sub" style="margin:0">Invite-only access control for the Unify app</p>
       </div>
       <div class="row" style="flex:none">
         <span id="whoami"></span>
@@ -114,7 +114,7 @@
 
 <script>
   const API = '/api/admin';
-  let token = localStorage.getItem('algora_admin_token') || '';
+  let token = localStorage.getItem('unify_admin_token') || '';
 
   const $ = (id) => document.getElementById(id);
   const showMsg = (el, text, kind) => { el.textContent = text; el.className = 'msg ' + kind; };
@@ -157,7 +157,7 @@
     try {
       const data = await api('/login', { method: 'POST', body: JSON.stringify({ email, password }) });
       token = data.token;
-      localStorage.setItem('algora_admin_token', token);
+      localStorage.setItem('unify_admin_token', token);
       showApp();
     } catch (err) {
       showMsg($('loginMsg'), err.message, 'error');
@@ -168,7 +168,7 @@
 
   $('logoutBtn').addEventListener('click', () => {
     token = '';
-    localStorage.removeItem('algora_admin_token');
+    localStorage.removeItem('unify_admin_token');
     showLogin();
   });
 
@@ -248,7 +248,7 @@
     } catch (err) {
       // Token invalid/expired
       token = '';
-      localStorage.removeItem('algora_admin_token');
+      localStorage.removeItem('unify_admin_token');
       showLogin();
       showMsg($('loginMsg'), 'Session expired — please log in again.', 'error');
     }

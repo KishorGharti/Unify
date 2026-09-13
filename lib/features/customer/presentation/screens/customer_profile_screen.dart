@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:algora/core/constants/channel_config.dart';
-import 'package:algora/core/theme/app_colors.dart';
-import 'package:algora/core/theme/app_dimensions.dart';
-import 'package:algora/core/theme/app_typography.dart';
-import 'package:algora/core/utils/date_formatter.dart';
-import 'package:algora/core/widgets/algora_badge.dart';
-import 'package:algora/core/widgets/algora_card.dart';
-import 'package:algora/core/widgets/channel_badge.dart';
-import 'package:algora/core/widgets/user_avatar.dart';
-import 'package:algora/features/customer/data/models/customer_profile_model.dart';
+import 'package:unify/core/constants/channel_config.dart';
+import 'package:unify/core/theme/app_colors.dart';
+import 'package:unify/core/theme/app_dimensions.dart';
+import 'package:unify/core/theme/app_typography.dart';
+import 'package:unify/core/utils/date_formatter.dart';
+import 'package:unify/core/widgets/unify_badge.dart';
+import 'package:unify/core/widgets/unify_card.dart';
+import 'package:unify/core/widgets/channel_badge.dart';
+import 'package:unify/core/widgets/user_avatar.dart';
+import 'package:unify/features/customer/data/models/customer_profile_model.dart';
 
 class CustomerProfileScreen extends StatelessWidget {
   final CustomerProfileModel customer;
@@ -28,8 +28,8 @@ class CustomerProfileScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Column(
           children: [
-            // Top Header Profile Card
-            AlgoraCard(
+
+            UnifyCard(
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
@@ -65,7 +65,7 @@ class CustomerProfileScreen extends StatelessWidget {
                     runSpacing: 6,
                     alignment: WrapAlignment.center,
                     children: customer.tags.map((t) {
-                      return AlgoraBadge(
+                      return UnifyBadge(
                         text: t,
                         backgroundColor: AppColors.primary.withOpacity(0.12),
                         textColor: AppColors.primaryLight,
@@ -77,11 +77,10 @@ class CustomerProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Metrics Row (Total Spend / Total Inquiries)
             Row(
               children: [
                 Expanded(
-                  child: AlgoraCard(
+                  child: UnifyCard(
                     padding: const EdgeInsets.all(14),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,7 +105,7 @@ class CustomerProfileScreen extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: AlgoraCard(
+                  child: UnifyCard(
                     padding: const EdgeInsets.all(14),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -133,8 +132,7 @@ class CustomerProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Contact & Social Information
-            AlgoraCard(
+            UnifyCard(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -176,9 +174,8 @@ class CustomerProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Internal CRM Notes
             if (customer.notes != null) ...[
-              AlgoraCard(
+              UnifyCard(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

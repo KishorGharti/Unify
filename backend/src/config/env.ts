@@ -18,16 +18,11 @@ export const env = {
   jwtSecret: process.env.JWT_SECRET ?? 'dev-only-insecure-secret-change-me',
   jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? '7d',
 
-  // Deliberately separate from jwtSecret above: an admin-panel token must
-  // never be valid on a tenant route, and vice versa.
   adminJwtSecret: process.env.ADMIN_JWT_SECRET ?? 'dev-only-insecure-admin-secret-change-me',
   adminJwtExpiresIn: process.env.ADMIN_JWT_EXPIRES_IN ?? '12h',
 
   tokenEncryptionKey: process.env.TOKEN_ENCRYPTION_KEY ?? '0'.repeat(64),
 
-  // Gmail SMTP - sends login/password-reset codes (see email.service.ts).
-  // EMAIL_APP_PASSWORD is a Gmail "app password" (Google Account > Security >
-  // 2-Step Verification > App passwords), not the account's real password.
   email: {
     user: process.env.EMAIL_USER ?? '',
     appPassword: process.env.EMAIL_APP_PASSWORD ?? '',
@@ -41,11 +36,21 @@ export const env = {
     graphApiVersion: process.env.META_GRAPH_API_VERSION ?? 'v20.0',
   },
 
-  // Lazily validated so `npm run dev` still boots for local exploration
-  // without Meta credentials; real Meta calls will throw a clear error.
+  metaInstagramLogin: {
+    appId: process.env.META_INSTAGRAM_APP_ID || process.env.META_APP_ID || '',
+    appSecret: process.env.META_INSTAGRAM_APP_SECRET || process.env.META_APP_SECRET || '',
+    oauthRedirectUri: process.env.META_INSTAGRAM_OAUTH_REDIRECT_URI ?? '',
+  },
+
   assertMetaConfigured(): void {
     required('META_APP_ID');
     required('META_APP_SECRET');
     required('META_OAUTH_REDIRECT_URI');
+  },
+
+  assertInstagramLoginConfigured(): void {
+    if (!this.metaInstagramLogin.appId) required('META_INSTAGRAM_APP_ID');
+    if (!this.metaInstagramLogin.appSecret) required('META_INSTAGRAM_APP_SECRET');
+    required('META_INSTAGRAM_OAUTH_REDIRECT_URI');
   },
 };

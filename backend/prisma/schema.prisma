@@ -1,11 +1,3 @@
-// Algora backend data model.
-// Mirrors the Dart models under lib/features/*/data/models so the mobile
-// app's repositories can be pointed at this API with minimal JSON reshaping.
-//
-// Provider: MongoDB. IDs stay as opaque cuid() strings mapped to Mongo's
-// "_id" field (not ObjectId) - this keeps every id a plain string end to
-// end, so nothing in the controllers/routes has to special-case Mongo.
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -28,24 +20,17 @@ model Tenant {
 model User {
   id           String   @id @default(cuid()) @map("_id")
   email        String   @unique
-  passwordHash String // randomly generated & hashed at account creation; login is passwordless (OTP), nobody ever types this
+  passwordHash String
   fullName     String
-  role         String   @default("agent") // owner | admin | agent
+  role         String   @default("agent")
   tenantId     String
   tenant       Tenant   @relation(fields: [tenantId], references: [id])
   createdAt    DateTime @default(now())
 
-  // Email-OTP login (see auth.controller.ts requestOtp/verifyOtp). Hashed,
-  // single-use, short-lived - never stored or logged in plaintext.
   otpCodeHash  String?
   otpExpiresAt DateTime?
   otpAttempts  Int       @default(0)
 
-  // False until the user sets a real password (via /auth/password/reset or
-  // /auth/password/set) - the password an admin's approval generates is
-  // random and never shown to anyone, so password login can't work yet. The
-  // Flutter app prompts to create one right after a user's first OTP login
-  // while this is false.
   hasPassword Boolean @default(false)
 
   assignedConversations Conversation[] @relation("AssignedAgent")
@@ -56,12 +41,13 @@ model Channel {
   id                   String    @id @default(cuid()) @map("_id")
   tenantId             String
   tenant               Tenant    @relation(fields: [tenantId], references: [id])
-  channelType          String // facebook | instagram
+  channelType          String
+  authMethod           String    @default("facebook_login")
   accountName          String
-  externalId           String // Page ID or IG business user ID
-  status               String    @default("active") // active | disconnected | error
-  accessTokenEncrypted String // AES-256-GCM encrypted long-lived Page access token
-  permissionsGranted   String // JSON-encoded string[]
+  externalId           String
+  status               String    @default("active")
+  accessTokenEncrypted String
+  permissionsGranted   String
   lastWebhookReceived  DateTime?
   connectedAt          DateTime  @default(now())
 
@@ -76,11 +62,11 @@ model Conversation {
   tenant             Tenant    @relation(fields: [tenantId], references: [id])
   channelId          String
   channel            Channel   @relation(fields: [channelId], references: [id])
-  customerExternalId String // Meta PSID (Messenger) or IGSID (Instagram)
+  customerExternalId String
   customerName       String?
   customerAvatarUrl  String?
-  status             String    @default("open") // open | pending | resolved
-  tags               String    @default("[]") // JSON-encoded string[]
+  status             String    @default("open")
+  tags               String    @default("[]")
   assignedAgentId    String?
   assignedAgent      User?     @relation("AssignedAgent", fields: [assignedAgentId], references: [id])
   lastMessageAt      DateTime?
@@ -95,34 +81,26 @@ model Message {
   id             String       @id @default(cuid()) @map("_id")
   conversationId String
   conversation   Conversation @relation(fields: [conversationId], references: [id])
-  direction      String // inbound | outbound
-  senderType     String // customer | agent | system
+  direction      String
+  senderType     String
   senderAgentId  String?
   senderAgent    User?        @relation(fields: [senderAgentId], references: [id])
   text           String?
   attachmentUrl  String?
   isInternalNote Boolean      @default(false)
-  metaMessageId  String? // message id returned by / received from Meta, for dedupe
+  metaMessageId  String?
   createdAt      DateTime     @default(now())
 }
 
-// --- Platform-level access control & admin panel (separate from the ---
-// --- per-tenant Owner/Admin/Agent roles above) ---
-
-// Invite-only signup gate: a tenant User can only be created for an email
-// that has a matching row here. Managed exclusively through the admin panel.
 model AllowedEmail {
   id            String    @id @default(cuid()) @map("_id")
-  email         String    @unique // stored lowercase; matched case-insensitively at signup
-  note          String? // e.g. "Referred by X", free text for the admin's own reference
+  email         String    @unique
+  note          String?
   addedByAdminId String
   addedByAdmin  AdminUser @relation(fields: [addedByAdminId], references: [id])
   createdAt     DateTime  @default(now())
 }
 
-// Superadmin accounts for the separate admin panel (/admin). Entirely
-// distinct from AlgoraNet's tenant Users - its own login, its own JWT.
-// Created via `npm run create-admin`, never through a public signup route.
 model AdminUser {
   id           String   @id @default(cuid()) @map("_id")
   email        String   @unique

@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 
-/// The full-pill gradient button used across the auth flow (Login, Forgot
-/// Password, Onboarding, Splash) - distinct from AlgoraButton's
-/// rounded-rectangle styles used across the rest of the app.
-class AlgoraGradientPillButton extends StatelessWidget {
+class UnifyGradientPillButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
   final bool isLoading;
   final double height;
 
-  const AlgoraGradientPillButton({
+  const UnifyGradientPillButton({
     Key? key,
     required this.text,
     required this.onPressed,

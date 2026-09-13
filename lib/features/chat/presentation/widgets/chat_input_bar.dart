@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:algora/core/constants/channel_config.dart';
-import 'package:algora/core/theme/app_colors.dart';
-import 'package:algora/core/theme/app_dimensions.dart';
-import 'package:algora/core/theme/app_typography.dart';
+import 'package:unify/core/constants/channel_config.dart';
+import 'package:unify/core/theme/app_colors.dart';
+import 'package:unify/core/theme/app_dimensions.dart';
+import 'package:unify/core/theme/app_typography.dart';
 import '../providers/chat_provider.dart';
 
 class ChatInputBar extends StatefulWidget {
@@ -70,7 +70,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Mode Switcher Bar (Reply to Customer vs Internal Note)
+
             Row(
               children: [
                 InkWell(
@@ -143,7 +143,6 @@ class _ChatInputBarState extends State<ChatInputBar> {
             ),
             const SizedBox(height: 6),
 
-            // Input Row
             Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [

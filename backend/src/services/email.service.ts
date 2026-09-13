@@ -18,7 +18,7 @@ function getTransporter(): nodemailer.Transporter {
 
 async function sendMail(to: string, subject: string, html: string, text: string): Promise<void> {
   await getTransporter().sendMail({
-    from: `Algora <${env.email.user}>`,
+    from: `Unify <${env.email.user}>`,
     to,
     subject,
     text,
@@ -33,8 +33,8 @@ function codeBlock(code: string): string {
 export async function sendPasswordResetEmail(to: string, code: string, ttlMinutes: number): Promise<void> {
   await sendMail(
     to,
-    `Your Algora password reset code: ${code}`,
-    `<p>Use this code to set a new Algora password:</p>${codeBlock(code)}<p>It expires in ${ttlMinutes} minutes. If you didn't request this, you can ignore this email - your password won't change.</p>`,
-    `Your Algora password reset code is ${code}. It expires in ${ttlMinutes} minutes. If you didn't request this, you can ignore this email - your password won't change.`,
+    `Your Unify password reset code: ${code}`,
+    `<p>Use this code to set a new Unify password:</p>${codeBlock(code)}<p>It expires in ${ttlMinutes} minutes. If you didn't request this, you can ignore this email - your password won't change.</p>`,
+    `Your Unify password reset code is ${code}. It expires in ${ttlMinutes} minutes. If you didn't request this, you can ignore this email - your password won't change.`,
   );
 }

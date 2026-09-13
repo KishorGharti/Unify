@@ -8,8 +8,6 @@ interface RawBodyRequest extends Request {
   rawBody?: Buffer;
 }
 
-// GET /webhooks/meta - one-time verification handshake Meta performs when you
-// register the callback URL in the App Dashboard > Webhooks.
 export function verifyWebhook(req: Request, res: Response) {
   const mode = req.query['hub.mode'];
   const token = req.query['hub.verify_token'];
@@ -21,9 +19,6 @@ export function verifyWebhook(req: Request, res: Response) {
   return res.sendStatus(403);
 }
 
-// POST /webhooks/meta - receives Messenger (object: "page") and Instagram
-// (object: "instagram") message events. Must respond 200 within a few seconds
-// or Meta will retry (and eventually disable the subscription).
 export async function receiveWebhook(req: RawBodyRequest, res: Response) {
   const signatureOk = verifyMetaSignature(req.rawBody ?? Buffer.from(JSON.stringify(req.body)), req.header('X-Hub-Signature-256'));
   if (!signatureOk) {
@@ -31,7 +26,6 @@ export async function receiveWebhook(req: RawBodyRequest, res: Response) {
     return res.sendStatus(401);
   }
 
-  // Acknowledge immediately; process after responding so Meta never times out.
   res.sendStatus(200);
 
   const body = req.body as {
@@ -62,8 +56,8 @@ export async function receiveWebhook(req: RawBodyRequest, res: Response) {
     await prisma.channel.update({ where: { id: channel.id }, data: { lastWebhookReceived: new Date() } });
 
     for (const messaging of entry.messaging ?? []) {
-      if (!messaging.message) continue; // ignore delivery/read receipts here; extend as needed
-      if (messaging.sender.id === entry.id) continue; // ignore echoes of our own sent messages
+      if (!messaging.message) continue;
+      if (messaging.sender.id === entry.id) continue;
 
       const conversation = await prisma.conversation.upsert({
         where: { channelId_customerExternalId: { channelId: channel.id, customerExternalId: messaging.sender.id } },

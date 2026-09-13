@@ -1,10 +1,3 @@
-// One-off CLI to create (or reset the password of) an admin panel account.
-// There is deliberately no public HTTP signup route for admins - run this
-// locally, against whatever DATABASE_URL your .env currently points at.
-//
-// Usage:
-//   npm run create-admin -- --email you@example.com --password 'Str0ngPass!' --name "Your Name"
-
 import bcrypt from 'bcryptjs';
 import { prisma } from '../db/prisma';
 

@@ -1,35 +1,31 @@
 import 'package:dio/dio.dart';
-import 'package:algora/core/constants/api_endpoints.dart';
-import 'package:algora/core/errors/app_exceptions.dart';
-import 'package:algora/core/network/api_client.dart';
+import 'package:unify/core/constants/api_endpoints.dart';
+import 'package:unify/core/errors/app_exceptions.dart';
+import 'package:unify/core/network/api_client.dart';
 import 'models/connected_account_model.dart';
 
 abstract class ChannelRepository {
   Future<List<ConnectedAccountModel>> getConnectedAccounts(String tenantId);
 
-  /// Step 1 of the real Meta OAuth flow: asks the backend for the Facebook
-  /// Login dialog URL (see backend/src/controllers/channels.controller.ts
-  /// startOAuth). Requires META_APP_ID/SECRET to be configured server-side.
   Future<String> startMetaOAuth();
 
-  /// Pages found in the most recent OAuth session (see startMetaOAuth) -
-  /// only populated after the user actually completes Meta's login in the
-  /// browser, so this legitimately 409s otherwise.
   Future<List<Map<String, dynamic>>> fetchAvailableFacebookPages();
   Future<List<Map<String, dynamic>>> fetchAvailableInstagramAccounts();
   Future<ConnectedAccountModel> connectFacebookPage({required String pageId});
   Future<ConnectedAccountModel> connectInstagramAccount({required String igUserId, required String pageId});
+
+  Future<String> startInstagramLoginOAuth();
+  Future<List<Map<String, dynamic>>> fetchAvailableInstagramLoginAccounts();
+  Future<ConnectedAccountModel> connectInstagramLoginAccount({required String igUserId});
+
   Future<void> disconnectChannel(String channelId);
   Future<void> testWebhookHealth(String channelId);
 }
 
-/// Talks to the real backend. There's no sample/mock connected-account data
-/// here - an empty list means no Facebook Page or Instagram account has
-/// actually been connected yet.
-class AlgoraChannelRepository implements ChannelRepository {
+class UnifyChannelRepository implements ChannelRepository {
   final ApiClient apiClient;
 
-  AlgoraChannelRepository({required this.apiClient});
+  UnifyChannelRepository({required this.apiClient});
 
   @override
   Future<List<ConnectedAccountModel>> getConnectedAccounts(String tenantId) async {
@@ -103,6 +99,46 @@ class AlgoraChannelRepository implements ChannelRepository {
       final response = await apiClient.post<Map<String, dynamic>>(
         ApiEndpoints.instagramConnect,
         data: {'ig_user_id': igUserId, 'page_id': pageId},
+        fromJsonT: (json) => json as Map<String, dynamic>,
+      );
+      return ConnectedAccountModel.fromJson(response.data!);
+    } catch (e) {
+      throw Exception(_friendlyMessage(e));
+    }
+  }
+
+  @override
+  Future<String> startInstagramLoginOAuth() async {
+    try {
+      final response = await apiClient.get<Map<String, dynamic>>(
+        ApiEndpoints.instagramLoginOauthStart,
+        fromJsonT: (json) => json as Map<String, dynamic>,
+      );
+      return response.data!['oauth_url'] as String;
+    } catch (e) {
+      throw Exception(_friendlyMessage(e));
+    }
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> fetchAvailableInstagramLoginAccounts() async {
+    try {
+      final response = await apiClient.get<List<dynamic>>(
+        ApiEndpoints.instagramLoginAccounts,
+        fromJsonT: (json) => json as List<dynamic>,
+      );
+      return (response.data ?? []).cast<Map<String, dynamic>>();
+    } catch (e) {
+      throw Exception(_friendlyMessage(e));
+    }
+  }
+
+  @override
+  Future<ConnectedAccountModel> connectInstagramLoginAccount({required String igUserId}) async {
+    try {
+      final response = await apiClient.post<Map<String, dynamic>>(
+        ApiEndpoints.instagramLoginConnect,
+        data: {'ig_user_id': igUserId},
         fromJsonT: (json) => json as Map<String, dynamic>,
       );
       return ConnectedAccountModel.fromJson(response.data!);

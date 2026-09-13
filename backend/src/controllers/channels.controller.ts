@@ -11,7 +11,22 @@ import {
   fetchManagedPages,
   subscribePageToWebhooks,
 } from '../services/meta.service';
-import { setPendingPages, getPendingPages, clearPendingPages } from '../services/pendingConnections.store';
+import {
+  buildInstagramLoginUrl,
+  exchangeInstagramCode,
+  exchangeForLongLivedInstagramToken,
+  fetchInstagramProfile,
+  fetchInstagramWebhookId,
+  subscribeInstagramLoginWebhooks,
+} from '../services/instagramLogin.service';
+import {
+  setPendingPages,
+  getPendingPages,
+  clearPendingPages,
+  setPendingInstagramLogin,
+  getPendingInstagramLogin,
+  clearPendingInstagramLogin,
+} from '../services/pendingConnections.store';
 
 function toConnectedAccountJson(channel: {
   id: string;
@@ -39,7 +54,6 @@ function toConnectedAccountJson(channel: {
   };
 }
 
-// GET /channels - list this tenant's connected Facebook/Instagram accounts.
 export async function getConnectedAccounts(req: AuthedRequest, res: Response) {
   const channels = await prisma.channel.findMany({
     where: { tenantId: req.tenantId },
@@ -49,9 +63,6 @@ export async function getConnectedAccounts(req: AuthedRequest, res: Response) {
   return ok(res, channels.map((c) => toConnectedAccountJson(c, c._count.conversations)));
 }
 
-// GET /channels/meta/oauth/start - builds the Meta Login dialog URL for the
-// Flutter client to open in a webview/browser (replaces the fake
-// `Future.delayed` in connect_facebook_screen.dart's _startOAuthFlow).
 export async function startOAuth(req: AuthedRequest, res: Response) {
   env.assertMetaConfigured();
 
@@ -76,9 +87,6 @@ export async function startOAuth(req: AuthedRequest, res: Response) {
   return ok(res, { oauth_url: url.toString() });
 }
 
-// GET /channels/meta/oauth/callback - Meta redirects here after the user
-// approves the login dialog. Must be publicly reachable (use ngrok locally)
-// and must exactly match META_OAUTH_REDIRECT_URI + the dashboard's allow-list.
 export async function oauthCallback(req: AuthedRequest, res: Response) {
   const { code, state, error, error_description } = req.query as Record<string, string>;
 
@@ -102,19 +110,14 @@ export async function oauthCallback(req: AuthedRequest, res: Response) {
   const pages = await fetchManagedPages(longLived.accessToken);
   setPendingPages(tenantId, pages);
 
-  // In production, redirect to a deep link your Flutter app registers, e.g.:
-  //   res.redirect(`algora://oauth-complete?tenant_id=${tenantId}`);
-  // so the app resumes the "select a Page" step automatically.
   return res.send(`
     <html><body style="font-family:sans-serif;text-align:center;padding-top:4rem;">
       <h2>Facebook connected ✅</h2>
-      <p>Found ${pages.length} Page(s). Return to the Algora app to finish selecting one.</p>
+      <p>Found ${pages.length} Page(s). Return to the Unify app to finish selecting one.</p>
     </body></html>
   `);
 }
 
-// GET /channels/meta/facebook/pages - Pages found in the most recent OAuth
-// session for this tenant, shaped like the mock in channel_repository.dart.
 export async function listFacebookPages(req: AuthedRequest, res: Response) {
   const pages = getPendingPages(req.tenantId!);
   if (!pages) {
@@ -137,8 +140,6 @@ export async function listFacebookPages(req: AuthedRequest, res: Response) {
   );
 }
 
-// GET /channels/meta/instagram/accounts - IG Professional accounts linked to
-// Pages found in the most recent OAuth session for this tenant.
 export async function listInstagramAccounts(req: AuthedRequest, res: Response) {
   const pages = getPendingPages(req.tenantId!);
   if (!pages) {
@@ -153,7 +154,7 @@ export async function listInstagramAccounts(req: AuthedRequest, res: Response) {
     .filter((p) => p.instagram_business_account)
     .map((p) => ({
       id: p.instagram_business_account!.id,
-      username: `@${p.name.toLowerCase().replace(/\s+/g, '.')}`, // refined by a follow-up Graph call if you need the real handle
+      username: `@${p.name.toLowerCase().replace(/\s+/g, '.')}`,
       name: p.name,
       followers_count: 0,
       linked_page: p.name,
@@ -163,9 +164,6 @@ export async function listInstagramAccounts(req: AuthedRequest, res: Response) {
   return ok(res, igAccounts);
 }
 
-// POST /channels/meta/facebook/connect { page_id }
-// Deliberately ignores any access token the client sends: the Page token
-// only ever comes from the server-side OAuth exchange, never the app.
 export async function connectFacebookPage(req: AuthedRequest, res: Response) {
   const { page_id } = req.body ?? {};
   if (!page_id) return fail(res, 'page_id is required.', 422);
@@ -197,8 +195,6 @@ export async function connectFacebookPage(req: AuthedRequest, res: Response) {
   return ok(res, toConnectedAccountJson(channel, 0), 201);
 }
 
-// POST /channels/meta/instagram/connect { ig_user_id, page_id }
-// The IG business account is messaged through its linked Page's access token.
 export async function connectInstagramAccount(req: AuthedRequest, res: Response) {
   const { ig_user_id, page_id } = req.body ?? {};
   if (!ig_user_id || !page_id) return fail(res, 'ig_user_id and page_id are required.', 422);
@@ -230,7 +226,108 @@ export async function connectInstagramAccount(req: AuthedRequest, res: Response)
   return ok(res, toConnectedAccountJson(channel, 0), 201);
 }
 
-// POST /channels/{id}/disconnect
+export async function startInstagramLoginOAuth(req: AuthedRequest, res: Response) {
+  env.assertInstagramLoginConfigured();
+
+  const state = jwt.sign({ tenantId: req.tenantId }, env.jwtSecret, { expiresIn: '10m' });
+  return ok(res, { oauth_url: buildInstagramLoginUrl(state) });
+}
+
+export async function instagramLoginOAuthCallback(req: AuthedRequest, res: Response) {
+  const { code, state, error, error_description } = req.query as Record<string, string>;
+
+  if (error) {
+    return res.status(400).send(`<h3>Instagram login failed</h3><p>${error_description ?? error}</p>`);
+  }
+  if (!code || !state) {
+    return res.status(400).send('<h3>Missing code or state parameter.</h3>');
+  }
+
+  let tenantId: string;
+  try {
+    const payload = jwt.verify(state, env.jwtSecret) as { tenantId: string };
+    tenantId = payload.tenantId;
+  } catch {
+    return res.status(400).send('<h3>Invalid or expired OAuth state. Please retry from the app.</h3>');
+  }
+
+  const shortLived = await exchangeInstagramCode(code);
+  const longLived = await exchangeForLongLivedInstagramToken(shortLived.accessToken);
+
+  const profile = await fetchInstagramProfile(longLived.accessToken);
+
+  const webhookId = await fetchInstagramWebhookId(longLived.accessToken);
+  setPendingInstagramLogin(tenantId, {
+    ...profile,
+    id: webhookId ?? profile.id,
+    accessToken: longLived.accessToken,
+  });
+
+  return res.send(`
+    <html><body style="font-family:sans-serif;text-align:center;padding-top:4rem;">
+      <h2>Instagram connected ✅</h2>
+      <p>Found @${profile.username}. Return to the Unify app to finish connecting it.</p>
+    </body></html>
+  `);
+}
+
+export async function listInstagramLoginAccounts(req: AuthedRequest, res: Response) {
+  const account = getPendingInstagramLogin(req.tenantId!);
+  if (!account) {
+    return fail(res, 'No pending Instagram Login connection. Start the login flow first.', 409);
+  }
+  const connectedExternalIds = new Set(
+    (await prisma.channel.findMany({ where: { tenantId: req.tenantId, channelType: 'instagram' }, select: { externalId: true } })).map(
+      (c) => c.externalId,
+    ),
+  );
+  return ok(res, [
+    {
+      id: account.id,
+      username: `@${account.username}`,
+      name: account.name ?? account.username,
+      followers_count: 0,
+      linked_page: null,
+      is_connected: connectedExternalIds.has(account.id),
+    },
+  ]);
+}
+
+export async function connectInstagramLoginAccount(req: AuthedRequest, res: Response) {
+  const { ig_user_id } = req.body ?? {};
+  if (!ig_user_id) return fail(res, 'ig_user_id is required.', 422);
+
+  const account = getPendingInstagramLogin(req.tenantId!);
+  if (!account || account.id !== ig_user_id) {
+    return fail(res, 'Unknown ig_user_id, or the login session expired. Restart the connection flow.', 409);
+  }
+
+  await subscribeInstagramLoginWebhooks(account.id, account.accessToken);
+
+  const channel = await prisma.channel.upsert({
+    where: { channelType_externalId: { channelType: 'instagram', externalId: account.id } },
+    update: {
+      accountName: `@${account.username}`,
+      status: 'active',
+      authMethod: 'instagram_login',
+      accessTokenEncrypted: encryptToken(account.accessToken),
+    },
+    create: {
+      tenantId: req.tenantId!,
+      channelType: 'instagram',
+      authMethod: 'instagram_login',
+      accountName: `@${account.username}`,
+      externalId: account.id,
+      status: 'active',
+      accessTokenEncrypted: encryptToken(account.accessToken),
+      permissionsGranted: JSON.stringify(['instagram_business_basic', 'instagram_business_manage_messages']),
+    },
+  });
+
+  clearPendingInstagramLogin(req.tenantId!);
+  return ok(res, toConnectedAccountJson(channel, 0), 201);
+}
+
 export async function disconnectChannel(req: AuthedRequest, res: Response) {
   const { id } = req.params;
   const channel = await prisma.channel.findFirst({ where: { id, tenantId: req.tenantId } });
@@ -241,7 +338,6 @@ export async function disconnectChannel(req: AuthedRequest, res: Response) {
   return ok(res, { disconnected: true });
 }
 
-// GET /channels/{id}/health
 export async function channelHealth(req: AuthedRequest, res: Response) {
   const { id } = req.params;
   const channel = await prisma.channel.findFirst({ where: { id, tenantId: req.tenantId } });

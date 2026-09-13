@@ -1,4 +1,4 @@
-import 'package:algora/core/constants/channel_config.dart';
+import 'package:unify/core/constants/channel_config.dart';
 
 enum ConnectionStatus {
   active,
@@ -40,7 +40,7 @@ class ConnectedAccountModel {
   final String tenantId;
   final ChannelType channelType;
   final String accountName;
-  final String externalId; // Meta Page ID or IG Account ID
+  final String externalId;
   final String? profilePicUrl;
   final ConnectionStatus status;
   final int activeConversationsCount;

@@ -1,21 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:algora/core/constants/app_constants.dart';
-import 'package:algora/core/theme/app_colors.dart';
-import 'package:algora/core/theme/app_typography.dart';
-import 'package:algora/core/utils/validators.dart';
-import 'package:algora/core/widgets/algora_gradient_pill_button.dart';
-import 'package:algora/core/widgets/algora_pill_field.dart';
-import 'package:algora/main.dart';
+import 'package:unify/core/constants/app_constants.dart';
+import 'package:unify/core/theme/app_colors.dart';
+import 'package:unify/core/theme/app_typography.dart';
+import 'package:unify/core/utils/validators.dart';
+import 'package:unify/core/widgets/unify_gradient_pill_button.dart';
+import 'package:unify/core/widgets/unify_pill_field.dart';
+import 'package:unify/main.dart';
 import '../providers/auth_provider.dart';
 import 'forgot_password_screen.dart';
 
-/// Password-only login. There's no signup screen at all - accounts are
-/// created exclusively from the admin panel (see backend/README.md section
-/// 6), which only ever generates a random, unknown password. First-time
-/// users (and anyone who forgets theirs) go through "Forgot password?",
-/// which emails a one-time code to set one - that's the only place OTP is
-/// used.
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
@@ -71,7 +65,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               child: Column(
                 children: [
                   const SizedBox(height: 56),
-                  Text('ALGORA', style: AppTypography.wordmark(color: Colors.white)),
+                  Text('UNIFY', style: AppTypography.wordmark(color: Colors.white)),
                   const SizedBox(height: 48),
                   Container(
                     width: double.infinity,
@@ -90,7 +84,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             style: AppTypography.heading1(color: AppColors.authHeading).copyWith(fontSize: 30),
                           ),
                           const SizedBox(height: 24),
-                          AlgoraPillField(
+                          UnifyPillField(
                             hint: 'Email',
                             controller: _emailController,
                             icon: Icons.email_outlined,
@@ -98,7 +92,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             validator: Validators.validateEmail,
                           ),
                           const SizedBox(height: 16),
-                          AlgoraPillField(
+                          UnifyPillField(
                             hint: 'Password',
                             controller: _passwordController,
                             icon: Icons.lock_outline_rounded,
@@ -118,7 +112,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ),
                           ),
                           const SizedBox(height: 12),
-                          AlgoraGradientPillButton(
+                          UnifyGradientPillButton(
                             text: 'Login',
                             isLoading: _isLoading,
                             onPressed: _handleLogin,
@@ -129,10 +123,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               children: [
                                 Text("Don't have access yet?", style: TextStyle(color: Colors.grey.shade600, fontSize: 14)),
                                 const SizedBox(height: 4),
-                                Text(
-                                  'Contact ${AppConstants.contactEmail} or ${AppConstants.contactPhone}',
+                                Text.rich(
+                                  TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: 'Contact ',
+                                        style: TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.w700, fontSize: 13),
+                                      ),
+                                      TextSpan(
+                                        text: '${AppConstants.contactEmail} or ${AppConstants.contactPhone}',
+                                        style: const TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.w700, fontSize: 13),
+                                      ),
+                                    ],
+                                  ),
                                   textAlign: TextAlign.center,
-                                  style: const TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.w700, fontSize: 13),
                                 ),
                               ],
                             ),

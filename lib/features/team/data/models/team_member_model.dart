@@ -1,4 +1,4 @@
-import 'package:algora/features/auth/data/models/user_model.dart';
+import 'package:unify/features/auth/data/models/user_model.dart';
 
 class TeamMemberModel {
   final String id;

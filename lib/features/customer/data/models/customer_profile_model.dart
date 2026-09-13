@@ -1,4 +1,4 @@
-import 'package:algora/core/constants/channel_config.dart';
+import 'package:unify/core/constants/channel_config.dart';
 
 class CustomerProfileModel {
   final String id;
@@ -7,7 +7,7 @@ class CustomerProfileModel {
   final String? phone;
   final String? avatarUrl;
   final ChannelType primaryChannel;
-  final String socialHandle; // e.g. @sophia.laurent or fb/sophia.laurent.7
+  final String socialHandle;
   final String? location;
   final String? notes;
   final List<String> tags;

@@ -28,13 +28,6 @@ function buildActivityTitle(m: ActivityMessage): string {
   return `${channelLabel} reply by ${m.senderAgent?.fullName ?? 'an agent'}`;
 }
 
-// GET /analytics/dashboard - real numbers computed from this tenant's actual
-// Conversations/Messages, not sample data. Everything here is derived, not
-// stored directly, so it stays correct as messages come and go:
-//   - resolved_today approximates "resolved" conversations by their last
-//     activity falling today (Conversation has no resolvedAt column yet).
-//   - avg_response_time is the mean gap between an inbound customer message
-//     and the next outbound agent reply in the same conversation.
 export async function getDashboardMetrics(req: AuthedRequest, res: Response) {
   const tenantId = req.tenantId!;
 
@@ -57,8 +50,6 @@ export async function getDashboardMetrics(req: AuthedRequest, res: Response) {
   const facebookInquiries = conversations.filter((c) => c.channel.channelType === 'facebook').length;
   const instagramInquiries = conversations.filter((c) => c.channel.channelType === 'instagram').length;
 
-  // Average first-response time across every conversation: gap between each
-  // inbound message and the next outbound reply that follows it.
   const allMessages = await prisma.message.findMany({
     where: { conversation: { tenantId } },
     orderBy: [{ conversationId: 'asc' }, { createdAt: 'asc' }],

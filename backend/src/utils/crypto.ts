@@ -1,9 +1,6 @@
 import crypto from 'crypto';
 import { env } from '../config/env';
 
-// AES-256-GCM at-rest encryption for Meta Page/IG access tokens.
-// Never log or return decrypted tokens to the client.
-
 const ALGORITHM = 'aes-256-gcm';
 
 function getKey(): Buffer {
@@ -19,7 +16,7 @@ export function encryptToken(plaintext: string): string {
   const cipher = crypto.createCipheriv(ALGORITHM, getKey(), iv);
   const encrypted = Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()]);
   const authTag = cipher.getAuthTag();
-  // Store as iv:authTag:ciphertext, all hex.
+
   return `${iv.toString('hex')}:${authTag.toString('hex')}:${encrypted.toString('hex')}`;
 }
 
@@ -34,7 +31,6 @@ export function decryptToken(payload: string): string {
   return decrypted.toString('utf8');
 }
 
-/** Verifies the X-Hub-Signature-256 header Meta sends on every webhook POST. */
 export function verifyMetaSignature(rawBody: Buffer, signatureHeader: string | undefined): boolean {
   if (!signatureHeader || !signatureHeader.startsWith('sha256=')) return false;
   const expected = crypto

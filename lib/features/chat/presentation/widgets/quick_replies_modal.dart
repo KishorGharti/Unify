@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:algora/core/theme/app_colors.dart';
-import 'package:algora/core/theme/app_dimensions.dart';
-import 'package:algora/core/theme/app_typography.dart';
-import 'package:algora/core/widgets/algora_card.dart';
+import 'package:unify/core/theme/app_colors.dart';
+import 'package:unify/core/theme/app_dimensions.dart';
+import 'package:unify/core/theme/app_typography.dart';
+import 'package:unify/core/widgets/unify_card.dart';
 
 class QuickRepliesModal extends StatelessWidget {
   final ValueChanged<String> onSelectReply;
@@ -88,7 +88,7 @@ class QuickRepliesModal extends StatelessWidget {
               separatorBuilder: (_, __) => const SizedBox(height: 10),
               itemBuilder: (context, index) {
                 final reply = cannedReplies[index];
-                return AlgoraCard(
+                return UnifyCard(
                   onTap: () {
                     onSelectReply(reply['text']!);
                     Navigator.of(context).pop();

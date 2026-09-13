@@ -1,15 +1,15 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:algora/core/constants/channel_config.dart';
-import 'package:algora/core/websocket/socket_events.dart';
-import 'package:algora/core/websocket/socket_service.dart';
-import 'package:algora/features/auth/presentation/providers/auth_provider.dart';
-import 'package:algora/features/inbox/presentation/providers/inbox_provider.dart';
-import 'package:algora/features/chat/data/chat_repository.dart';
-import 'package:algora/features/chat/data/models/message_model.dart';
+import 'package:unify/core/constants/channel_config.dart';
+import 'package:unify/core/websocket/socket_events.dart';
+import 'package:unify/core/websocket/socket_service.dart';
+import 'package:unify/features/auth/presentation/providers/auth_provider.dart';
+import 'package:unify/features/inbox/presentation/providers/inbox_provider.dart';
+import 'package:unify/features/chat/data/chat_repository.dart';
+import 'package:unify/features/chat/data/models/message_model.dart';
 
 final chatRepositoryProvider = Provider<ChatRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
-  return AlgoraChatRepository(apiClient: apiClient);
+  return UnifyChatRepository(apiClient: apiClient);
 });
 
 enum ChatInputMode { customerReply, internalNote }

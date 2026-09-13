@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:algora/core/constants/app_constants.dart';
-import 'package:algora/core/theme/app_colors.dart';
-import 'package:algora/core/theme/app_typography.dart';
+import 'package:unify/core/constants/app_constants.dart';
+import 'package:unify/core/theme/app_colors.dart';
+import 'package:unify/core/theme/app_typography.dart';
 import '../providers/auth_provider.dart';
 import 'login_screen.dart';
 import 'onboarding_screen.dart';
-import 'package:algora/main.dart';
+import 'package:unify/main.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -82,7 +82,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('ALGORA', style: AppTypography.wordmark(color: Colors.white)),
+                  Text('UNIFY', style: AppTypography.wordmark(color: Colors.white)),
                   const SizedBox(height: 10),
                   Text(
                     AppConstants.appTagline,

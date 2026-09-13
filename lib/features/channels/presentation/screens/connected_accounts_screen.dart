@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:algora/core/constants/channel_config.dart';
-import 'package:algora/core/theme/app_colors.dart';
-import 'package:algora/core/theme/app_dimensions.dart';
-import 'package:algora/core/theme/app_typography.dart';
-import 'package:algora/core/utils/date_formatter.dart';
-import 'package:algora/core/widgets/algora_button.dart';
-import 'package:algora/core/widgets/algora_card.dart';
-import 'package:algora/core/widgets/channel_badge.dart';
-import 'package:algora/core/widgets/empty_state_view.dart';
-import 'package:algora/core/widgets/loading_state_view.dart';
-import 'package:algora/features/channels/data/models/connected_account_model.dart';
-import 'package:algora/features/channels/presentation/providers/channels_provider.dart';
+import 'package:unify/core/constants/channel_config.dart';
+import 'package:unify/core/theme/app_colors.dart';
+import 'package:unify/core/theme/app_dimensions.dart';
+import 'package:unify/core/theme/app_typography.dart';
+import 'package:unify/core/utils/date_formatter.dart';
+import 'package:unify/core/widgets/unify_button.dart';
+import 'package:unify/core/widgets/unify_card.dart';
+import 'package:unify/core/widgets/channel_badge.dart';
+import 'package:unify/core/widgets/empty_state_view.dart';
+import 'package:unify/core/widgets/loading_state_view.dart';
+import 'package:unify/features/channels/data/models/connected_account_model.dart';
+import 'package:unify/features/channels/presentation/providers/channels_provider.dart';
 import 'connect_facebook_screen.dart';
 import 'connect_instagram_screen.dart';
 
@@ -44,7 +44,7 @@ class ConnectedAccountsScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Meta Security & Official API banner
+
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
@@ -80,7 +80,7 @@ class ConnectedAccountsScreen extends ConsumerWidget {
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  'Algora connects via official OAuth & Webhooks. No passwords stored, end-to-end multi-tenant secure.',
+                                  'Unify connects via official OAuth & Webhooks. No passwords stored, end-to-end multi-tenant secure.',
                                   style: AppTypography.caption(
                                     color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
                                   ),
@@ -93,7 +93,6 @@ class ConnectedAccountsScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 24),
 
-                    // Section: Active Accounts
                     Text(
                       'Active Social Channels (${channelsState.accounts.length})',
                       style: AppTypography.heading3(
@@ -121,7 +120,6 @@ class ConnectedAccountsScreen extends ConsumerWidget {
 
                     const SizedBox(height: 32),
 
-                    // Section: Add New Channels
                     Text(
                       'Connect New Channel',
                       style: AppTypography.heading3(
@@ -130,7 +128,6 @@ class ConnectedAccountsScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 12),
 
-                    // Connect FB Card
                     _buildAddChannelCard(
                       context: context,
                       title: 'Facebook Page Messenger',
@@ -145,7 +142,6 @@ class ConnectedAccountsScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 12),
 
-                    // Connect IG Card
                     _buildAddChannelCard(
                       context: context,
                       title: 'Instagram Professional Direct',
@@ -160,7 +156,6 @@ class ConnectedAccountsScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 12),
 
-                    // Future Channel (Disabled with 'Coming Soon')
                     _buildFutureChannelCard(
                       title: 'WhatsApp Business API',
                       subtitle: 'Support for WhatsApp Cloud API is planned in next release.',
@@ -181,7 +176,7 @@ class ConnectedAccountsScreen extends ConsumerWidget {
     ConnectedAccountModel account,
     bool isDark,
   ) {
-    return AlgoraCard(
+    return UnifyCard(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -284,7 +279,7 @@ class ConnectedAccountsScreen extends ConsumerWidget {
     required bool isDark,
     required VoidCallback onTap,
   }) {
-    return AlgoraCard(
+    return UnifyCard(
       onTap: onTap,
       padding: const EdgeInsets.all(16),
       child: Row(
@@ -326,7 +321,7 @@ class ConnectedAccountsScreen extends ConsumerWidget {
   }) {
     return Opacity(
       opacity: 0.6,
-      child: AlgoraCard(
+      child: UnifyCard(
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [

@@ -1,20 +1,20 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:algora/core/constants/channel_config.dart';
-import 'package:algora/core/websocket/socket_events.dart';
-import 'package:algora/core/websocket/socket_service.dart';
-import 'package:algora/core/widgets/status_badge.dart';
-import 'package:algora/features/auth/presentation/providers/auth_provider.dart';
-import 'package:algora/features/chat/data/models/message_model.dart';
-import 'package:algora/features/inbox/data/inbox_repository.dart';
-import 'package:algora/features/inbox/data/models/conversation_model.dart';
+import 'package:unify/core/constants/channel_config.dart';
+import 'package:unify/core/websocket/socket_events.dart';
+import 'package:unify/core/websocket/socket_service.dart';
+import 'package:unify/core/widgets/status_badge.dart';
+import 'package:unify/features/auth/presentation/providers/auth_provider.dart';
+import 'package:unify/features/chat/data/models/message_model.dart';
+import 'package:unify/features/inbox/data/inbox_repository.dart';
+import 'package:unify/features/inbox/data/models/conversation_model.dart';
 
 final inboxRepositoryProvider = Provider<InboxRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
-  return AlgoraInboxRepository(apiClient: apiClient);
+  return UnifyInboxRepository(apiClient: apiClient);
 });
 
-final webSocketServiceProvider = Provider<AlgoraWebSocketService>((ref) {
-  return AlgoraWebSocketService();
+final webSocketServiceProvider = Provider<UnifyWebSocketService>((ref) {
+  return UnifyWebSocketService();
 });
 
 enum InboxFilterType {
@@ -60,7 +60,7 @@ class InboxState {
 
   List<ConversationModel> get filteredConversations {
     return allConversations.where((conv) {
-      // 1. Search Query Filter
+
       if (searchQuery.isNotEmpty) {
         final query = searchQuery.toLowerCase();
         final matchName = conv.customer.fullName.toLowerCase().contains(query);
@@ -69,7 +69,6 @@ class InboxState {
         if (!matchName && !matchMsg && !matchTag) return false;
       }
 
-      // 2. Category Filter
       switch (currentFilter) {
         case InboxFilterType.all:
           return conv.status != ConversationStatus.resolved;
@@ -136,7 +135,6 @@ class InboxNotifier extends StateNotifier<InboxState> {
             createdAt: DateTime.now(),
           );
 
-          // Update local list
           final updated = state.allConversations.map((c) {
             if (c.id == convId) {
               return c.copyWith(
@@ -221,8 +219,6 @@ class InboxNotifier extends StateNotifier<InboxState> {
     state = state.copyWith(allConversations: updated);
   }
 
-  /// Sets (or, with null, clears) the optional custom nickname shown above a
-  /// contact's name.
   Future<void> updateNickname(String conversationId, String? nickname) async {
     await _repository.updateNickname(conversationId, nickname);
     final updated = state.allConversations.map((c) {

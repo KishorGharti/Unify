@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:algora/core/network/api_client.dart';
-import 'package:algora/core/storage/secure_storage.dart';
-import 'package:algora/features/auth/data/auth_repository.dart';
-import 'package:algora/features/auth/data/models/user_model.dart';
+import 'package:unify/core/network/api_client.dart';
+import 'package:unify/core/storage/secure_storage.dart';
+import 'package:unify/features/auth/data/auth_repository.dart';
+import 'package:unify/features/auth/data/models/user_model.dart';
 
 final secureStorageProvider = Provider<SecureStorageService>((ref) {
   return SecureStorageService();
@@ -16,7 +16,7 @@ final apiClientProvider = Provider<ApiClient>((ref) {
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   final storage = ref.watch(secureStorageProvider);
-  return AlgoraAuthRepository(apiClient: apiClient, storage: storage);
+  return UnifyAuthRepository(apiClient: apiClient, storage: storage);
 });
 
 enum AuthStatus { initial, authenticated, unauthenticated, loading, error }
@@ -83,9 +83,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  /// Step 1 of setting/resetting a password: emails a one-time code to
-  /// [email]. Covers both a brand new account's first-ever password and a
-  /// genuinely forgotten one.
   Future<bool> requestPasswordReset(String email) async {
     state = state.copyWith(status: AuthStatus.loading, errorMessage: null);
     try {
@@ -98,8 +95,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  /// Step 2 of password reset: sets [newPassword] using the emailed [code],
-  /// and logs the device in.
   Future<bool> resetPassword(String email, String code, String newPassword) async {
     state = state.copyWith(status: AuthStatus.loading, errorMessage: null);
     try {

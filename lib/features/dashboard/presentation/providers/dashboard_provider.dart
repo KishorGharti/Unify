@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:algora/core/constants/api_endpoints.dart';
-import 'package:algora/core/errors/app_exceptions.dart';
-import 'package:algora/core/network/api_client.dart';
-import 'package:algora/features/auth/presentation/providers/auth_provider.dart';
-import 'package:algora/features/dashboard/data/models/dashboard_metrics.dart';
+import 'package:unify/core/constants/api_endpoints.dart';
+import 'package:unify/core/errors/app_exceptions.dart';
+import 'package:unify/core/network/api_client.dart';
+import 'package:unify/features/auth/presentation/providers/auth_provider.dart';
+import 'package:unify/features/dashboard/data/models/dashboard_metrics.dart';
 
 class DashboardState {
   final bool isLoading;
@@ -30,10 +30,6 @@ class DashboardState {
   }
 }
 
-/// Talks to the real backend (see backend/src/controllers/analytics.controller.ts)
-/// - every number here is computed from this tenant's actual conversations
-/// and messages, not sample data. A fresh workspace with nothing connected
-/// yet correctly shows zeros, not a bug.
 class DashboardNotifier extends StateNotifier<DashboardState> {
   final ApiClient _apiClient;
 
